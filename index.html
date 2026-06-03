@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -55,6 +56,20 @@
       letter-spacing: 0.04em; transition: background 0.2s;
     }
     #btn-inicio:hover { background: rgba(255,255,255,0.2); }
+
+    #usuario-email {
+      font-size: 12px; color: var(--hoja);
+      font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em;
+    }
+
+    #btn-logout {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; color: var(--crema); font-size: 12px;
+      font-family: 'DM Sans', sans-serif; padding: 5px 14px; cursor: pointer;
+      letter-spacing: 0.04em; transition: background 0.2s;
+    }
+    #btn-logout:hover { background: rgba(255,80,80,0.25); }
+
     #map-wrap { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; }
     #map { width: 100%; height: 100%; }
 
@@ -77,9 +92,7 @@
       display: flex; align-items: center; justify-content: center;
       transition: opacity 0.4s;
     }
-    .gallery-slide img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+    .gallery-slide img { width: 100%; height: 100%; object-fit: cover; }
     .gallery-slide.hidden { opacity: 0; pointer-events: none; }
     #panel-img-placeholder {
       position: absolute; inset: 0;
@@ -90,20 +103,17 @@
       content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
       background: linear-gradient(transparent, var(--bg-panel)); pointer-events: none; z-index: 3;
     }
-    /* Gallery nav arrows */
     .gallery-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
       z-index: 10; background: rgba(0,0,0,0.45); border: none;
       border-radius: 50%; width: 32px; height: 32px; cursor: pointer;
       color: white; font-size: 16px; display: flex; align-items: center;
-      justify-content: center; transition: background 0.2s;
-      line-height: 1;
+      justify-content: center; transition: background 0.2s; line-height: 1;
     }
     .gallery-arrow:hover { background: rgba(0,0,0,0.7); }
     #gallery-prev { left: 10px; }
     #gallery-next { right: 10px; }
     .gallery-arrow.hidden { display: none; }
-    /* Dots */
     #gallery-dots {
       position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
       z-index: 10; display: flex; gap: 5px;
@@ -211,7 +221,9 @@
     <span>Costa Rica · Limon</span>
   </div>
   <div id="header-right">
+    <span id="usuario-email"></span>
     <button id="btn-inicio" onclick="volverAlInicio()">↩ Inicio</button>
+    <button id="btn-logout" onclick="cerrarSesion()">Salir</button>
   </div>
 </div>
 
@@ -221,7 +233,6 @@
   <div id="side-panel">
     <div id="panel-img-wrap">
       <div id="panel-img-placeholder">🌿</div>
-      <!-- slides inserted by JS -->
       <button class="gallery-arrow hidden" id="gallery-prev" onclick="cambiarFoto(-1)">&#8249;</button>
       <button class="gallery-arrow hidden" id="gallery-next" onclick="cambiarFoto(1)">&#8250;</button>
       <div id="gallery-dots"></div>
@@ -251,7 +262,6 @@
     </div>
   </div>
 
-  <!-- LEYENDA CON FILTROS -->
   <div id="leyenda">
     <div class="leyenda-label">Nivel</div>
     <button class="filtro-btn" id="filtro-principiante" onclick="toggleFiltro('principiante')">
@@ -273,12 +283,31 @@
 </div>
 
 <script>
+  /* ── SUPABASE ── */
+  const SUPABASE_URL = 'https://ipotudrokwjhmhdxtrko.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_R5Eo0TozjpknIwfjQXz_xw_Mbktj4Ok';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Verificar sesión al cargar — si no hay sesión manda al login
+  sb.auth.getSession().then(({ data }) => {
+    if (!data.session) {
+      window.location.href = 'login.html';
+    } else {
+      // Mostrar email del usuario en el header
+      document.getElementById('usuario-email').textContent = data.session.user.email;
+    }
+  });
+
+  async function cerrarSesion() {
+    await sb.auth.signOut();
+    window.location.href = 'login.html';
+  }
 
 /* =====================================================
-   DATOS — agrega más URLs en el array "imgs" de cada lugar
+   DATOS
    ===================================================== */
 const lugares = [
-
   {
     latlng: [9.99074, -83.03596],
     nombre: "Limón Centro",
@@ -289,11 +318,8 @@ const lugares = [
     naturaleza: "Mar Caribe, manglares",
     equipo: ["Ropa liviana", "Zapatos cómodos", "Protector solar", "Repelente de mosquitos", "Paraguas plegable"],
     tags: ["Puerto histórico", "Cultura afrocaribe", "Carnaval", "Gastronomía"],
-    imgs: [
-      "https://costarica.org/wp-content/uploads/2017/09/Limon2.jpg"
-    ]
+    imgs: ["https://costarica.org/wp-content/uploads/2017/09/Limon2.jpg"]
   },
-
   {
     latlng: [9.7319895, -82.8211192],
     nombre: "Playa Cahuita",
@@ -304,11 +330,8 @@ const lugares = [
     naturaleza: "Arrecife de coral, bosque tropical",
     equipo: ["Traje de baño", "Snorkel y gafas", "Repelente biodegradable", "Sandalias acuáticas", "Protector solar reef-safe"],
     tags: ["Playa", "Snorkel", "Parque Nacional", "Peces tropicales"],
-    imgs: [
-      "https://descubramoscostarica.com/sites/default/files/styles/wide/public/2021-12/cahuita-1.jpg.webp?itok=ghhC7i06"
-    ]
+    imgs: ["https://descubramoscostarica.com/sites/default/files/styles/wide/public/2021-12/cahuita-1.jpg.webp?itok=ghhC7i06"]
   },
-
   {
     latlng: [9.643367832448668, -82.68753794816715],
     nombre: "Punta Uva",
@@ -319,11 +342,8 @@ const lugares = [
     naturaleza: "Selva tropical, aguas turquesas",
     equipo: ["Traje de baño", "Repelente de mosquitos", "Binoculares", "Cámara sumergible", "Ropa de secado rápido"],
     tags: ["Playa virgen", "Turquesa", "Avistamiento de fauna", "Buceo"],
-    imgs: [
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC1BIMzYFSf2hNvB8ISK2sinM_aHMcgzW35Q&s"
-    ]
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC1BIMzYFSf2hNvB8ISK2sinM_aHMcgzW35Q&s"]
   },
-
   {
     latlng: [10.0167, -83.3167],
     nombre: "Parque Nacional Tortuguero",
@@ -334,11 +354,8 @@ const lugares = [
     naturaleza: "Canales, selva lluviosa, playa negra",
     equipo: ["Botas de hule o impermeables", "Chubasquero", "Repelente DEET fuerte", "Linterna de cabeza", "Ropa de manga larga", "Binoculares"],
     tags: ["Tortugas marinas", "Canales", "Monos", "Caimanes", "Manatíes"],
-    imgs: [
-      "https://costarica.org/wp-content/uploads/2014/12/Tortuguero-Canal.jpg"
-    ]
+    imgs: ["https://costarica.org/wp-content/uploads/2014/12/Tortuguero-Canal.jpg"]
   },
-
   {
     latlng: [9.6582, -82.7524],
     nombre: "Jaguar Rescue Center",
@@ -349,11 +366,8 @@ const lugares = [
     naturaleza: "Fauna rescatada, selva secundaria",
     equipo: ["Ropa cómoda de colores neutros", "Zapatos cerrados", "Repelente suave", "Cámara"],
     tags: ["Perezosos", "Fauna silvestre", "Educación ambiental", "Familia"],
-    imgs: [
-      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/df/91/6c/jrc.jpg?w=1200&h=900&s=1"
-    ]
+    imgs: ["https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/df/91/6c/jrc.jpg?w=1200&h=900&s=1"]
   },
-
   {
     latlng: [9.8736, -82.9381],
     nombre: "Río Pacuare",
@@ -364,11 +378,8 @@ const lugares = [
     naturaleza: "Cañón selvático, cascadas, rapidos",
     equipo: ["Ropa deportiva que moje", "Sandalias con agarre", "Bolsa impermeable para pertenencias", "Casco y chaleco (los provee la empresa)", "Crema solar resistente al agua"],
     tags: ["Rafting clase IV", "Cañón", "Cascadas", "Aventura extrema"],
-    imgs: [
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzlTWzPs2R1UqGwHLB960C02J2zyjmOlupNg&s"
-    ]
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzlTWzPs2R1UqGwHLB960C02J2zyjmOlupNg&s"]
   },
-
   {
     latlng: [9.5831, -82.7758],
     nombre: "Reserva Indígena Bribri",
@@ -379,11 +390,8 @@ const lugares = [
     naturaleza: "Selva montañosa, ríos, cacao silvestre",
     equipo: ["Botas impermeables de caña alta", "Ropa de manga larga", "Repelente fuerte", "Cantimplora", "Impermeable liviano"],
     tags: ["Cultura indígena", "Cacao", "Ecoturismo", "Senderismo"],
-    imgs: [
-      "https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png"
-    ]
+    imgs: ["https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png"]
   }
-
 ];
 
 /* =====================================================
@@ -395,52 +403,30 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-/* ── Iconos originales con archivos .png ── */
 function crearIcono(nivel) {
   const iconos = {
-    principiante: {
-      iconUrl: 'GeoCaribeProyecto/principiante.png',
-      iconSize:      [40, 40],
-      iconAnchor:    [20, 40],
-      tooltipAnchor: [22, -20]
-    },
-    intermedio: {
-      iconUrl: 'GeoCaribeProyecto/intermedio.png',
-      iconSize:      [40, 40],
-      iconAnchor:    [20, 40],
-      tooltipAnchor: [22, -20]
-    },
-    avanzado: {
-      iconUrl: 'GeoCaribeProyecto/avanzado.png',
-      iconSize:      [40, 40],
-      iconAnchor:    [20, 40],
-      tooltipAnchor: [22, -20]
-    }
+    principiante: { iconUrl: 'GeoCaribeProyecto/principiante.png', iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
+    intermedio:   { iconUrl: 'GeoCaribeProyecto/intermedio.png',   iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
+    avanzado:     { iconUrl: 'GeoCaribeProyecto/avanzado.png',     iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] }
   };
-  const cfg = iconos[nivel] || iconos.principiante;
-  return L.icon(cfg);
+  return L.icon(iconos[nivel] || iconos.principiante);
 }
 
-/* Mapa de marcadores por nivel para filtro */
 const marcadoresPorNivel = { principiante: [], intermedio: [], avanzado: [] };
 const filtrosActivos = { principiante: true, intermedio: true, avanzado: true };
 
 lugares.forEach(lugar => {
   const marker = L.marker(lugar.latlng, { icon: crearIcono(lugar.nivel) }).addTo(map);
   marker.bindTooltip(`<strong>${lugar.nombre}</strong>`, {
-    direction: 'right', className: 'tucan-tooltip',
-    offset: [8, -21], permanent: false, sticky: false
+    direction: 'right', className: 'tucan-tooltip', offset: [8, -21], permanent: false, sticky: false
   });
   marker.on('click', () => abrirPanel(lugar));
-  marcadoresPorNivel[lugar.nivel] = marcadoresPorNivel[lugar.nivel] || [];
   marcadoresPorNivel[lugar.nivel].push(marker);
 });
 
-/* ── Filtros ── */
 function toggleFiltro(nivel) {
   filtrosActivos[nivel] = !filtrosActivos[nivel];
-  const btn = document.getElementById('filtro-' + nivel);
-  btn.classList.toggle('apagado', !filtrosActivos[nivel]);
+  document.getElementById('filtro-' + nivel).classList.toggle('apagado', !filtrosActivos[nivel]);
   (marcadoresPorNivel[nivel] || []).forEach(m => {
     if (filtrosActivos[nivel]) { m.addTo(map); } else { m.remove(); }
   });
@@ -452,13 +438,10 @@ let fotosTotal = 0;
 
 function construirGaleria(imgs) {
   const wrap = document.getElementById('panel-img-wrap');
-  // Limpiar slides anteriores
   wrap.querySelectorAll('.gallery-slide').forEach(el => el.remove());
-
   const placeholder = document.getElementById('panel-img-placeholder');
   const dotsEl = document.getElementById('gallery-dots');
   dotsEl.innerHTML = '';
-
   fotoActual = 0;
   fotosTotal = imgs ? imgs.length : 0;
 
@@ -470,18 +453,14 @@ function construirGaleria(imgs) {
   }
 
   placeholder.style.display = 'none';
-
   imgs.forEach((url, i) => {
     const slide = document.createElement('div');
     slide.className = 'gallery-slide' + (i > 0 ? ' hidden' : '');
     const img = document.createElement('img');
-    img.src = url;
-    img.alt = '';
+    img.src = url; img.alt = '';
     img.onerror = () => { slide.style.background = '#2d6a44'; img.style.display = 'none'; };
     slide.appendChild(img);
-    // Insert before arrows
     wrap.insertBefore(slide, document.getElementById('gallery-prev'));
-
     if (imgs.length > 1) {
       const dot = document.createElement('button');
       dot.className = 'gdot' + (i === 0 ? ' active' : '');
@@ -493,7 +472,6 @@ function construirGaleria(imgs) {
   const mostrarFlechas = imgs.length > 1;
   document.getElementById('gallery-prev').classList.toggle('hidden', !mostrarFlechas);
   document.getElementById('gallery-next').classList.toggle('hidden', !mostrarFlechas);
-  actualizarFlechas();
 }
 
 function irAFoto(idx) {
@@ -503,14 +481,9 @@ function irAFoto(idx) {
   fotoActual = (idx + fotosTotal) % fotosTotal;
   slides[fotoActual].classList.remove('hidden');
   document.querySelectorAll('.gdot').forEach((d, i) => d.classList.toggle('active', i === fotoActual));
-  actualizarFlechas();
 }
 
 function cambiarFoto(dir) { irAFoto(fotoActual + dir); }
-
-function actualizarFlechas() {
-  // Keep both always visible when multiple photos (circular nav)
-}
 
 /* ── Panel ── */
 function abrirPanel(lugar) {
@@ -518,22 +491,14 @@ function abrirPanel(lugar) {
   const nivelTextos = { principiante: '🟢 Principiante', intermedio: '🟡 Intermedio', avanzado: '🔴 Avanzado' };
   nivelEl.textContent = nivelTextos[lugar.nivel] || lugar.nivel;
   nivelEl.className = 'nivel-' + lugar.nivel;
-
   document.getElementById('panel-title').textContent = lugar.nombre;
   document.getElementById('panel-subtitle').textContent = lugar.subtitulo;
   document.getElementById('panel-desc').textContent = lugar.desc;
   document.getElementById('panel-epoca').textContent = lugar.epoca;
   document.getElementById('panel-naturaleza').textContent = lugar.naturaleza;
-
-  document.getElementById('panel-equipo').innerHTML =
-    lugar.equipo.map(e => `<span class="equipo-tag">${e}</span>`).join('');
-  document.getElementById('panel-tags').innerHTML =
-    lugar.tags.map(t => `<span class="ptag">${t}</span>`).join('');
-
-  // Soporte para imgs (array) o img (string legacy)
-  const imagenes = lugar.imgs || (lugar.img ? [lugar.img] : []);
-  construirGaleria(imagenes);
-
+  document.getElementById('panel-equipo').innerHTML = lugar.equipo.map(e => `<span class="equipo-tag">${e}</span>`).join('');
+  document.getElementById('panel-tags').innerHTML = lugar.tags.map(t => `<span class="ptag">${t}</span>`).join('');
+  construirGaleria(lugar.imgs || (lugar.img ? [lugar.img] : []));
   document.getElementById('side-panel').classList.add('open');
   map.flyTo(lugar.latlng, Math.max(map.getZoom(), 11), { duration: 0.8 });
 }
@@ -549,4 +514,3 @@ function volverAlInicio() {
 </script>
 </body>
 </html>
-
