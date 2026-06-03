@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geo Caribe — Crear cuenta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde: #1a4a2e;
+      --verde-med: #2d6a44;
+      --verde-claro: #4a9463;
+      --crema: #f5f0e8;
+      --crema-oscura: #ede5d8;
+      --texto: #1c1c1c;
+      --muted: #6b6b6b;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--verde);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--crema);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 36px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .logo-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--verde);
+      line-height: 1.1;
+    }
+
+    .logo-title span {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      color: var(--verde);
+      margin-bottom: 6px;
+    }
+
+    .subtitulo {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--verde);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--crema-oscura);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--texto);
+      background: white;
+      margin-bottom: 18px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--verde-claro); }
+
+    #btn-registro {
+      width: 100%;
+      padding: 14px;
+      background: var(--verde);
+      color: var(--crema);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 16px;
+    }
+
+    #btn-registro:hover { background: var(--verde-med); }
+    #btn-registro:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .divider {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    #btn-login {
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: var(--verde);
+      border: 1.5px solid var(--verde-claro);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #btn-login:hover { background: var(--crema-oscura); }
+
+    #mensaje {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+    }
+
+    #mensaje.error { background: #fdecea; color: #a93226; border: 1px solid #f5c6c2; }
+    #mensaje.exito { background: #e6f4ea; color: #2d6a44; border: 1px solid #b7dfbf; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo-wrap">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 28 C5 22, 3 14, 10 8 C12 6, 14 7, 13 10 C12 14, 9 18, 10 24 Z" fill="#4a9463" opacity="0.85"/>
+      <path d="M18 28 C22 22, 26 14, 20 7 C18 5, 16 7, 17 10 C18 14, 21 18, 20 24 Z" fill="#6ab87a" opacity="0.85"/>
+      <path d="M14 30 C12 24, 11 16, 14 9 C15 7, 17 7, 18 9 C21 16, 20 24, 18 30 Z" fill="#2d6a44"/>
+      <line x1="16" y1="30" x2="16" y2="33" stroke="#8b5e3c" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div class="logo-title">
+      Geo Caribe
+      <span>Costa Rica · Limón</span>
+    </div>
+  </div>
+
+  <h2>Crear cuenta</h2>
+  <p class="subtitulo">Registrate para explorar el mapa</p>
+
+  <label for="email">Correo electrónico</label>
+  <input type="email" id="email" placeholder="tucorreo@ejemplo.com"/>
+
+  <label for="password">Contraseña</label>
+  <input type="password" id="password" placeholder="Mínimo 6 caracteres"/>
+
+  <label for="password2">Confirmá la contraseña</label>
+  <input type="password" id="password2" placeholder="Repetí la contraseña"/>
+
+  <button id="btn-registro" onclick="registrarse()">Crear cuenta</button>
+
+  <div class="divider">¿Ya tenés cuenta?</div>
+
+  <button id="btn-login" onclick="window.location.href='login.html'">Iniciar sesión</button>
+
+  <div id="mensaje"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ipotudrokwjhmhdxtrko.supabase.co';
+  const SUPABASE_KEY = 'PEGA_AQUI_TU_PUBLISHABLE_KEY';
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function mostrarMensaje(texto, tipo) {
+    const el = document.getElementById('mensaje');
+    el.textContent = texto;
+    el.className = tipo;
+    el.style.display = 'block';
+  }
+
+  async function registrarse() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const password2 = document.getElementById('password2').value;
+    const btn = document.getElementById('btn-registro');
+
+    if (!email || !password || !password2) {
+      mostrarMensaje('Por favor completá todos los campos.', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      mostrarMensaje('La contraseña debe tener al menos 6 caracteres.', 'error');
+      return;
+    }
+
+    if (password !== password2) {
+      mostrarMensaje('Las contraseñas no coinciden.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creando cuenta...';
+
+    const { error } = await sb.auth.signUp({ email, password });
+
+    if (error) {
+      mostrarMensaje('Error al crear la cuenta: ' + error.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+    } else {
+      mostrarMensaje('¡Cuenta creada! Redirigiendo al mapa...', 'exito');
+      setTimeout(() => window.location.href = 'index.html', 1500);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') registrarse();
+  });
+</script>
+
+</body>
+</html>
