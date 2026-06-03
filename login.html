@@ -161,4 +161,36 @@
 <div class="card">
   <div class="logo-wrap">
     <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 28 C5 22, 3 14, 10 8 C12 6, 14 7, 13 10 C12 14, 9 18, 10 24 Z" fill="#4a9463" opac
+      <path d="M8 28 C5 22, 3 14, 10 8 C12 6, 14 7, 13 10 C12 14, 9 18, 10 24 Z" fill="#4a9463" opacity="0.85"/>
+      <path d="M18 28 C22 22, 26 14, 20 7 C18 5, 16 7, 17 10 C18 14, 21 18, 20 24 Z" fill="#6ab87a" opacity="0.85"/>
+      <path d="M14 30 C12 24, 11 16, 14 9 C15 7, 17 7, 18 9 C21 16, 20 24, 18 30 Z" fill="#2d6a44"/>
+      <line x1="16" y1="30" x2="16" y2="33" stroke="#8b5e3c" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div class="logo-title">
+      Geo Caribe
+      <span>Costa Rica · Limón</span>
+    </div>
+  </div>
+
+  <h2>Bienvenido</h2>
+  <p class="subtitulo">Iniciá sesión para explorar el mapa</p>
+
+  <label for="email">Correo electrónico</label>
+  <input type="email" id="email" placeholder="tucorreo@ejemplo.com"/>
+
+  <label for="password">Contraseña</label>
+  <input type="password" id="password" placeholder="••••••••"/>
+
+  <button id="btn-login" onclick="iniciarSesion()">Iniciar sesión</button>
+
+  <div class="divider">¿No tenés cuenta?</div>
+
+  <button id="btn-registro" onclick="window.location.href='registro.html'">Crear cuenta nueva</button>
+
+  <div id="mensaje"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ipotudrokwjhmhdxtrko.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_R5Eo0TozjpknIwfjQXz_xw_Mbktj4Ok
