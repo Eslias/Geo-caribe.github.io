@@ -6,6 +6,7 @@
   <title>Geo Caribe — Iniciar Sesión</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,7 +14,6 @@
       --verde: #1a4a2e;
       --verde-med: #2d6a44;
       --verde-claro: #4a9463;
-      --hoja: #6ab87a;
       --crema: #f5f0e8;
       --crema-oscura: #ede5d8;
       --texto: #1c1c1c;
@@ -190,7 +190,53 @@
   <div id="mensaje"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://ipotudrokwjhmhdxtrko.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_R5Eo0TozjpknIwfjQXz_xw_Mbktj4Ok
+  const SUPABASE_KEY = 'sb_publishable_R5Eo0TozjpknIwfjQXz_xw_Mbktj4Ok';
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session) window.location.href = 'index.html';
+  });
+
+  function mostrarMensaje(texto, tipo) {
+    const el = document.getElementById('mensaje');
+    el.textContent = texto;
+    el.className = tipo;
+    el.style.display = 'block';
+  }
+
+  async function iniciarSesion() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('btn-login');
+
+    if (!email || !password) {
+      mostrarMensaje('Por favor completá todos los campos.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      mostrarMensaje('Correo o contraseña incorrectos.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Iniciar sesión';
+    } else {
+      mostrarMensaje('¡Sesión iniciada! Redirigiendo...', 'exito');
+      setTimeout(() => window.location.href = 'index.html', 1000);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') iniciarSesion();
+  });
+</script>
+
+</body>
+</html>
