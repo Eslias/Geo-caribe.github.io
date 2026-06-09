@@ -255,10 +255,6 @@
       font-size: 11px; font-weight: 500; color: var(--muted);
       margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.08em;
     }
-    .leyenda-divider {
-      height: 1px; background: var(--crema-oscura);
-      margin: 8px 0;
-    }
     .filtro-btn {
       display: flex; align-items: center; gap: 7px;
       margin-bottom: 5px; background: none; border: none;
@@ -274,23 +270,6 @@
     .filtro-btn .check-icon { margin-left: auto; font-size: 11px; color: var(--verde-med); }
     .filtro-btn.apagado .check-icon { visibility: hidden; }
 
-    /* Equipaje filtro en leyenda */
-    #equipo-leyenda-list { margin-top: 2px; }
-    .equipo-leyenda-item {
-      display: flex; align-items: center; gap: 7px;
-      padding: 3px 6px; cursor: pointer; border-radius: 6px;
-      font-size: 12px; color: var(--texto); margin-bottom: 3px;
-      transition: background 0.15s;
-    }
-    .equipo-leyenda-item:last-child { margin-bottom: 0; }
-    .equipo-leyenda-item:hover { background: var(--crema-oscura); }
-    .equipo-leyenda-item input[type=checkbox] {
-      accent-color: var(--verde); width: 13px; height: 13px; cursor: pointer; flex-shrink: 0;
-    }
-    .equipo-resumen {
-      font-size: 11px; color: var(--muted); padding: 2px 6px 4px;
-      font-style: italic;
-    }
 
     #panel-body::-webkit-scrollbar { width: 4px; }
     #panel-body::-webkit-scrollbar-track { background: transparent; }
@@ -393,10 +372,7 @@
       <span class="check-icon">✓</span>
     </button>
 
-    <div class="leyenda-divider"></div>
-    <div class="leyenda-label">Mi equipaje</div>
-    <div class="equipo-resumen" id="equipo-resumen">0 ítems seleccionados</div>
-    <div id="equipo-leyenda-list"></div>
+
   </div>
 </div>
 
@@ -597,7 +573,6 @@ const lugares = [
 /* =====================================================
    EQUIPAJE — lista global única y sin duplicados
    ===================================================== */
-const todoElEquipo = [...new Set(lugares.flatMap(l => l.equipo))].sort();
 const equipoSeleccionado = new Set();
 
 /* =====================================================
@@ -742,51 +717,6 @@ function actualizarResaltado() {
   });
 }
 
-/* =====================================================
-   FILTRO DE EQUIPAJE — LEYENDA (estilo nivel)
-   ===================================================== */
-function construirLeyendaEquipo() {
-  const lista = document.getElementById('equipo-leyenda-list');
-  lista.innerHTML = '';
-  todoElEquipo.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'equipo-leyenda-item';
-    const id = 'leq-' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
-    div.innerHTML = `
-      <input type="checkbox" id="${id}" ${equipoSeleccionado.has(item) ? 'checked' : ''}>
-      <label for="${id}" style="cursor:pointer;flex:1;line-height:1.3">${item}</label>
-    `;
-    const cb = div.querySelector('input');
-    cb.addEventListener('change', e => {
-      if (e.target.checked) equipoSeleccionado.add(item);
-      else equipoSeleccionado.delete(item);
-      actualizarResaltado();
-      actualizarLeyendaEquipo();
-      sincronizarEquipoEnPanel();
-    });
-    lista.appendChild(div);
-  });
-  actualizarLeyendaEquipo();
-}
-
-function actualizarLeyendaEquipo() {
-  const n = equipoSeleccionado.size;
-  document.getElementById('equipo-resumen').textContent =
-    n === 0 ? 'Ningún ítem seleccionado' : `${n} ítem${n !== 1 ? 's' : ''} seleccionado${n !== 1 ? 's' : ''}`;
-  document.querySelectorAll('#equipo-leyenda-list input[type=checkbox]').forEach(cb => {
-    const label = cb.nextElementSibling.textContent;
-    cb.checked = equipoSeleccionado.has(label);
-  });
-}
-
-function sincronizarEquipoEnPanel() {
-  if (!lugarActual) return;
-  document.querySelectorAll('#equipo-filter-list input[type=checkbox]').forEach(cb => {
-    const label = cb.nextElementSibling.textContent;
-    cb.checked = equipoSeleccionado.has(label);
-  });
-  actualizarResaltado();
-}
 
 /* =====================================================
    GALERÍA
@@ -875,8 +805,7 @@ function volverAlInicio() {
   cerrarPanel();
 }
 
-/* Inicializar leyenda de equipaje al cargar */
-construirLeyendaEquipo();
+/* Inicializar */
 </script>
 </body>
 </html>
