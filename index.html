@@ -35,62 +35,52 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
       height: 56px;
       background: var(--verde);
-      display: flex; align-items: center; padding: 0 20px; gap: 14px;
+      display: flex; align-items: center; padding: 0 16px; gap: 12px;
       border-bottom: 2px solid var(--verde-claro);
     }
-    #header-logo { width: 36px; height: 36px; flex-shrink: 0; }
+    #header-logo { width: 34px; height: 34px; flex-shrink: 0; }
     #header-title {
       font-family: 'Playfair Display', serif;
-      font-size: 18px; font-weight: 600;
+      font-size: 17px; font-weight: 600;
       color: var(--crema); letter-spacing: 0.02em; line-height: 1.1;
+      flex-shrink: 0;
     }
     #header-title span {
       display: block; font-family: 'DM Sans', sans-serif;
-      font-size: 11px; font-weight: 300; color: var(--hoja);
+      font-size: 10px; font-weight: 300; color: var(--hoja);
       letter-spacing: 0.12em; text-transform: uppercase;
     }
-    #header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-    #btn-inicio {
-      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 20px; color: var(--crema); font-size: 12px;
-      font-family: 'DM Sans', sans-serif; padding: 5px 14px; cursor: pointer;
-      letter-spacing: 0.04em; transition: background 0.2s;
-    }
-    #btn-inicio:hover { background: rgba(255,255,255,0.2); }
-    #usuario-email { font-size: 12px; color: var(--hoja); font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em; }
-    #btn-logout {
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 20px; color: var(--crema); font-size: 12px;
-      font-family: 'DM Sans', sans-serif; padding: 5px 14px; cursor: pointer;
-      letter-spacing: 0.04em; transition: background 0.2s;
-    }
-    #btn-logout:hover { background: rgba(255,80,80,0.25); }
 
-    /* ── BUSCADOR ── */
+    /* ── BUSCADOR EN HEADER ── */
     #search-wrap {
-      position: absolute; top: 72px; left: 50%; transform: translateX(-50%);
-      z-index: 1500; width: 320px;
+      flex: 1; max-width: 340px; position: relative;
     }
     #search-input {
-      width: 100%; padding: 10px 40px 10px 16px;
-      border-radius: 24px; border: 1.5px solid rgba(26,74,46,0.25);
-      background: white; font-family: 'DM Sans', sans-serif;
-      font-size: 13px; color: var(--texto);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; padding: 7px 34px 7px 14px;
+      border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.12);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; color: white;
+      outline: none; transition: border-color 0.2s, background 0.2s;
     }
-    #search-input:focus { border-color: var(--verde-claro); box-shadow: 0 2px 16px rgba(26,74,46,0.18); }
-    #search-input::placeholder { color: var(--muted); }
+    #search-input:focus {
+      border-color: var(--hoja);
+      background: rgba(255,255,255,0.18);
+    }
+    #search-input::placeholder { color: rgba(255,255,255,0.5); }
     #search-clear {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: var(--muted);
-      font-size: 16px; display: none; line-height: 1;
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.6); font-size: 14px;
+      display: none; line-height: 1; padding: 2px;
     }
+    #search-clear:hover { color: white; }
     #search-results {
-      background: white; border-radius: 14px; margin-top: 6px;
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: white; border-radius: 14px;
       border: 1px solid var(--crema-oscura);
       box-shadow: 0 4px 20px rgba(0,0,0,0.13);
-      display: none; overflow: hidden;
+      display: none; overflow: hidden; z-index: 3000;
     }
     .search-item {
       padding: 10px 16px; cursor: pointer; border-bottom: 1px solid var(--crema-oscura);
@@ -104,6 +94,23 @@
       padding: 12px 16px; font-size: 13px; color: var(--muted);
       font-style: italic; text-align: center;
     }
+
+    #header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    #btn-inicio {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px; color: var(--crema); font-size: 12px;
+      font-family: 'DM Sans', sans-serif; padding: 5px 12px; cursor: pointer;
+      letter-spacing: 0.04em; transition: background 0.2s; white-space: nowrap;
+    }
+    #btn-inicio:hover { background: rgba(255,255,255,0.2); }
+    #usuario-email { font-size: 12px; color: var(--hoja); font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em; }
+    #btn-logout {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; color: var(--crema); font-size: 12px;
+      font-family: 'DM Sans', sans-serif; padding: 5px 12px; cursor: pointer;
+      letter-spacing: 0.04em; transition: background 0.2s;
+    }
+    #btn-logout:hover { background: rgba(255,80,80,0.25); }
 
     #map-wrap { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; }
     #map { width: 100%; height: 100%; }
@@ -189,12 +196,6 @@
     .info-card-value { font-size: 13px; font-weight: 500; color: var(--texto); }
     .info-card-icon { font-size: 18px; margin-bottom: 4px; }
     .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
-    #panel-equipo { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-    .equipo-tag {
-      font-size: 12px; padding: 4px 10px; border-radius: 20px;
-      background: var(--crema-oscura); color: var(--verde);
-      font-weight: 500; border: 1px solid rgba(74,148,99,0.2);
-    }
     #panel-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
     .ptag {
       font-size: 12px; padding: 4px 10px; border-radius: 20px;
@@ -218,7 +219,7 @@
     #tab-info { display: block; }
     #tab-equipo-content { display: none; }
 
-    /* ── FILTRO EQUIPAJE ── */
+    /* ── EQUIPAJE EN PANEL (tab) ── */
     #equipo-filter-list { padding: 8px 0; }
     .equipo-filter-item {
       display: flex; align-items: center; gap: 10px;
@@ -234,10 +235,6 @@
       font-size: 12px; color: var(--muted); padding: 10px 20px 4px;
       font-style: italic; line-height: 1.5;
     }
-    .equipo-match-badge {
-      margin-left: auto; font-size: 11px; background: var(--verde-claro);
-      color: white; border-radius: 20px; padding: 2px 8px; flex-shrink: 0;
-    }
 
     .tucan-tooltip {
       background: white !important; border: 1px solid rgba(0,0,0,0.12) !important;
@@ -247,15 +244,20 @@
     }
     .tucan-tooltip::before { display: none !important; }
 
-    /* ── LEYENDA + FILTROS NIVEL ── */
+    /* ── LEYENDA — NIVEL + EQUIPAJE ── */
     #leyenda {
       position: absolute; bottom: 20px; left: 12px; z-index: 1000;
       background: white; border: 1px solid var(--crema-oscura);
       border-radius: 12px; padding: 10px 14px; font-size: 12px;
+      min-width: 170px;
     }
     .leyenda-label {
       font-size: 11px; font-weight: 500; color: var(--muted);
       margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .leyenda-divider {
+      height: 1px; background: var(--crema-oscura);
+      margin: 8px 0;
     }
     .filtro-btn {
       display: flex; align-items: center; gap: 7px;
@@ -271,6 +273,24 @@
     .filtro-btn .leyenda-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .filtro-btn .check-icon { margin-left: auto; font-size: 11px; color: var(--verde-med); }
     .filtro-btn.apagado .check-icon { visibility: hidden; }
+
+    /* Equipaje filtro en leyenda */
+    #equipo-leyenda-list { margin-top: 2px; }
+    .equipo-leyenda-item {
+      display: flex; align-items: center; gap: 7px;
+      padding: 3px 6px; cursor: pointer; border-radius: 6px;
+      font-size: 12px; color: var(--texto); margin-bottom: 3px;
+      transition: background 0.15s;
+    }
+    .equipo-leyenda-item:last-child { margin-bottom: 0; }
+    .equipo-leyenda-item:hover { background: var(--crema-oscura); }
+    .equipo-leyenda-item input[type=checkbox] {
+      accent-color: var(--verde); width: 13px; height: 13px; cursor: pointer; flex-shrink: 0;
+    }
+    .equipo-resumen {
+      font-size: 11px; color: var(--muted); padding: 2px 6px 4px;
+      font-style: italic;
+    }
 
     #panel-body::-webkit-scrollbar { width: 4px; }
     #panel-body::-webkit-scrollbar-track { background: transparent; }
@@ -293,6 +313,14 @@
     Geo Caribe
     <span>Costa Rica · Limon</span>
   </div>
+
+  <!-- BUSCADOR EN EL HEADER -->
+  <div id="search-wrap">
+    <input type="text" id="search-input" placeholder="Buscar lugar… (ej: Cahuita, Pacuare)" autocomplete="off"/>
+    <button id="search-clear" onclick="limpiarBusqueda()" title="Limpiar">✕</button>
+    <div id="search-results"></div>
+  </div>
+
   <div id="header-right">
     <span id="usuario-email"></span>
     <button id="btn-inicio" onclick="volverAlInicio()">↩ Inicio</button>
@@ -301,12 +329,6 @@
 </div>
 
 <div id="map-wrap">
-  <div id="search-wrap">
-    <input type="text" id="search-input" placeholder="Buscar lugar… (ej: Cahuita, Pacuare)" autocomplete="off"/>
-    <button id="search-clear" onclick="limpiarBusqueda()">✕</button>
-    <div id="search-results"></div>
-  </div>
-
   <div id="map"></div>
 
   <div id="side-panel">
@@ -347,11 +369,12 @@
     </div>
 
     <div id="tab-equipo-content">
-      <p class="equipo-filter-note">Marca el equipo que ya llevás. Los lugares con todo lo necesario se resaltan en el mapa.</p>
+      <p class="equipo-filter-note">Marcá el equipo que ya llevás. Los ítems que te faltan se resaltan en el mapa.</p>
       <div id="equipo-filter-list"></div>
     </div>
   </div>
 
+  <!-- LEYENDA: NIVEL + EQUIPAJE -->
   <div id="leyenda">
     <div class="leyenda-label">Nivel</div>
     <button class="filtro-btn" id="filtro-principiante" onclick="toggleFiltro('principiante')">
@@ -369,6 +392,11 @@
       <span>Avanzado</span>
       <span class="check-icon">✓</span>
     </button>
+
+    <div class="leyenda-divider"></div>
+    <div class="leyenda-label">Mi equipaje</div>
+    <div class="equipo-resumen" id="equipo-resumen">0 ítems seleccionados</div>
+    <div id="equipo-leyenda-list"></div>
   </div>
 </div>
 
@@ -480,7 +508,6 @@ const lugares = [
     tags: ["Cultura indígena", "Cacao", "Ecoturismo", "Senderismo"],
     imgs: ["https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png"]
   },
-  /* ── NUEVAS UBICACIONES ── */
   {
     latlng: [9.6283, -82.6636],
     nombre: "Playa Manzanillo",
@@ -614,10 +641,8 @@ function toggleFiltro(nivel) {
 }
 
 /* =====================================================
-   BUSCADOR — solo reconoce nombres exactos (fuzzy parcial)
+   BUSCADOR
    ===================================================== */
-const nombresPermitidos = lugares.map(l => l.nombre.toLowerCase());
-
 function buscar(query) {
   const q = query.trim().toLowerCase();
   const resultsEl = document.getElementById('search-results');
@@ -683,7 +708,7 @@ function switchTab(tab) {
 }
 
 /* =====================================================
-   FILTRO DE EQUIPAJE
+   FILTRO DE EQUIPAJE — PANEL
    ===================================================== */
 let lugarActual = null;
 
@@ -694,14 +719,16 @@ function construirFiltroEquipo(lugar) {
     const tiene = equipoSeleccionado.has(item);
     const div = document.createElement('div');
     div.className = 'equipo-filter-item';
+    const id = 'eq-' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
     div.innerHTML = `
-      <input type="checkbox" id="eq-${item.replace(/\s+/g,'_')}" ${tiene ? 'checked' : ''}>
-      <label for="eq-${item.replace(/\s+/g,'_')}" style="cursor:pointer;flex:1">${item}</label>
+      <input type="checkbox" id="${id}" ${tiene ? 'checked' : ''}>
+      <label for="${id}" style="cursor:pointer;flex:1">${item}</label>
     `;
     div.querySelector('input').addEventListener('change', e => {
       if (e.target.checked) equipoSeleccionado.add(item);
       else equipoSeleccionado.delete(item);
       actualizarResaltado();
+      actualizarLeyendaEquipo();
     });
     lista.appendChild(div);
   });
@@ -709,12 +736,56 @@ function construirFiltroEquipo(lugar) {
 
 function actualizarResaltado() {
   if (!lugarActual) return;
-  const falta = lugarActual.equipo.filter(e => !equipoSeleccionado.has(e));
   document.querySelectorAll('#equipo-filter-list .equipo-filter-item').forEach(item => {
     const label = item.querySelector('label').textContent;
-    const ok = equipoSeleccionado.has(label);
-    item.style.opacity = ok ? '1' : '0.65';
+    item.style.opacity = equipoSeleccionado.has(label) ? '1' : '0.65';
   });
+}
+
+/* =====================================================
+   FILTRO DE EQUIPAJE — LEYENDA (estilo nivel)
+   ===================================================== */
+function construirLeyendaEquipo() {
+  const lista = document.getElementById('equipo-leyenda-list');
+  lista.innerHTML = '';
+  todoElEquipo.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'equipo-leyenda-item';
+    const id = 'leq-' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    div.innerHTML = `
+      <input type="checkbox" id="${id}" ${equipoSeleccionado.has(item) ? 'checked' : ''}>
+      <label for="${id}" style="cursor:pointer;flex:1;line-height:1.3">${item}</label>
+    `;
+    const cb = div.querySelector('input');
+    cb.addEventListener('change', e => {
+      if (e.target.checked) equipoSeleccionado.add(item);
+      else equipoSeleccionado.delete(item);
+      actualizarResaltado();
+      actualizarLeyendaEquipo();
+      sincronizarEquipoEnPanel();
+    });
+    lista.appendChild(div);
+  });
+  actualizarLeyendaEquipo();
+}
+
+function actualizarLeyendaEquipo() {
+  const n = equipoSeleccionado.size;
+  document.getElementById('equipo-resumen').textContent =
+    n === 0 ? 'Ningún ítem seleccionado' : `${n} ítem${n !== 1 ? 's' : ''} seleccionado${n !== 1 ? 's' : ''}`;
+  document.querySelectorAll('#equipo-leyenda-list input[type=checkbox]').forEach(cb => {
+    const label = cb.nextElementSibling.textContent;
+    cb.checked = equipoSeleccionado.has(label);
+  });
+}
+
+function sincronizarEquipoEnPanel() {
+  if (!lugarActual) return;
+  document.querySelectorAll('#equipo-filter-list input[type=checkbox]').forEach(cb => {
+    const label = cb.nextElementSibling.textContent;
+    cb.checked = equipoSeleccionado.has(label);
+  });
+  actualizarResaltado();
 }
 
 /* =====================================================
@@ -789,6 +860,7 @@ function abrirPanel(lugar) {
   document.getElementById('panel-tags').innerHTML = lugar.tags.map(t => `<span class="ptag">${t}</span>`).join('');
   construirGaleria(lugar.imgs || (lugar.img ? [lugar.img] : []));
   construirFiltroEquipo(lugar);
+  actualizarResaltado();
   switchTab('info');
   document.getElementById('side-panel').classList.add('open');
   map.flyTo(lugar.latlng, Math.max(map.getZoom(), 11), { duration: 0.8 });
@@ -802,6 +874,9 @@ function volverAlInicio() {
   map.flyTo([9.82, -82.9], 9, { duration: 1 });
   cerrarPanel();
 }
+
+/* Inicializar leyenda de equipaje al cargar */
+construirLeyendaEquipo();
 </script>
 </body>
 </html>
