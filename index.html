@@ -405,9 +405,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 function crearIcono(nivel) {
   const iconos = {
-    principiante: { iconUrl: 'GeoCaribeProyecto/principiante1.png', iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
-    intermedio:   { iconUrl: 'GeoCaribeProyecto/intermedio1.png',   iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
-    avanzado:     { iconUrl: 'GeoCaribeProyecto/avanzado1.png',     iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] }
+    principiante: { iconUrl: 'https://raw.githubusercontent.com/Eslias/Geo-caribe.github.io/main/GeoCaribeProyecto/principiante1.png', iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
+    intermedio:   { iconUrl: 'https://raw.githubusercontent.com/Eslias/Geo-caribe.github.io/main/GeoCaribeProyecto/intermedio1.png',   iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
+    avanzado:     { iconUrl: 'https://raw.githubusercontent.com/Eslias/Geo-caribe.github.io/main/GeoCaribeProyecto/avanzado1.png',     iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] }
   };
   return L.icon(iconos[nivel] || iconos.principiante);
 }
