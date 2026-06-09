@@ -84,7 +84,7 @@
 
     /* ── IMAGE GALLERY ── */
     #panel-img-wrap {
-      width: 100%; height: 200px; flex-shrink: 0; position: relative;
+      width: 100%; height: 220px; flex-shrink: 0; position: relative;
       overflow: hidden; background: var(--verde-med);
     }
     .gallery-slide {
@@ -106,14 +106,24 @@
     .gallery-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
       z-index: 10; background: rgba(0,0,0,0.45); border: none;
-      border-radius: 50%; width: 32px; height: 32px; cursor: pointer;
-      color: white; font-size: 16px; display: flex; align-items: center;
+      border-radius: 50%; width: 34px; height: 34px; cursor: pointer;
+      color: white; font-size: 20px; display: flex; align-items: center;
       justify-content: center; transition: background 0.2s; line-height: 1;
     }
     .gallery-arrow:hover { background: rgba(0,0,0,0.7); }
     #gallery-prev { left: 10px; }
     #gallery-next { right: 10px; }
     .gallery-arrow.hidden { display: none; }
+
+    /* ── FOTO COUNTER badge ── */
+    #gallery-counter {
+      position: absolute; top: 10px; right: 10px; z-index: 10;
+      background: rgba(0,0,0,0.55); color: white;
+      font-size: 11px; font-family: 'DM Sans', sans-serif;
+      padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em;
+    }
+    #gallery-counter.hidden { display: none; }
+
     #gallery-dots {
       position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
       z-index: 10; display: flex; gap: 5px;
@@ -126,7 +136,7 @@
     .gdot.active { background: white; }
 
     #panel-close {
-      position: absolute; top: 10px; right: 10px; z-index: 10;
+      position: absolute; top: 10px; left: 10px; z-index: 10;
       background: rgba(0,0,0,0.45); border: none; border-radius: 50%;
       width: 30px; height: 30px; cursor: pointer; color: white;
       font-size: 15px; display: flex; align-items: center; justify-content: center;
@@ -137,11 +147,21 @@
     #panel-nivel {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-      text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 6px;
     }
     .nivel-principiante { background: #e6f4ea; color: #2d6a44; }
     .nivel-intermedio    { background: #fff4e0; color: #8b5e1c; }
     .nivel-avanzado      { background: #fdecea; color: #a93226; }
+
+    /* categoria badge */
+    #panel-categoria-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+      margin-bottom: 6px; margin-left: 6px;
+      background: #e8f0fb; color: #1a3a6e;
+    }
+
     #panel-title {
       font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600;
       color: var(--texto); margin-bottom: 2px; line-height: 1.2;
@@ -174,11 +194,16 @@
     .tucan-tooltip::before { display: none !important; }
 
     /* ── LEYENDA + FILTROS ── */
-    #leyenda {
+    #filtros-wrap {
       position: absolute; bottom: 20px; left: 12px; z-index: 1000;
+      display: flex; gap: 8px; align-items: flex-end;
+    }
+
+    .filtro-panel {
       background: white; border: 1px solid var(--crema-oscura);
       border-radius: 12px; padding: 10px 14px; font-size: 12px;
     }
+
     .leyenda-label {
       font-size: 11px; font-weight: 500; color: var(--muted);
       margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.08em;
@@ -195,6 +220,9 @@
     .filtro-btn:hover { background: var(--crema-oscura); }
     .filtro-btn.apagado { opacity: 0.35; }
     .filtro-btn .leyenda-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .filtro-btn .leyenda-dot-sq {
+      width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+    }
     .filtro-btn .check-icon { margin-left: auto; font-size: 11px; color: var(--verde-med); }
     .filtro-btn.apagado .check-icon { visibility: hidden; }
 
@@ -236,10 +264,14 @@
       <button class="gallery-arrow hidden" id="gallery-prev" onclick="cambiarFoto(-1)">&#8249;</button>
       <button class="gallery-arrow hidden" id="gallery-next" onclick="cambiarFoto(1)">&#8250;</button>
       <div id="gallery-dots"></div>
+      <div id="gallery-counter" class="hidden"></div>
     </div>
     <button id="panel-close" onclick="cerrarPanel()">✕</button>
     <div id="panel-body">
-      <div id="panel-nivel" class="nivel-principiante">🟢 Principiante</div>
+      <div style="display:flex; flex-wrap:wrap; gap:0; align-items:center; margin-bottom:10px;">
+        <div id="panel-nivel" class="nivel-principiante">🟢 Principiante</div>
+        <div id="panel-categoria-badge">🏖️ Playa</div>
+      </div>
       <p id="panel-title">Nombre</p>
       <p id="panel-subtitle">Subtítulo</p>
       <p id="panel-desc">Descripción</p>
@@ -262,23 +294,54 @@
     </div>
   </div>
 
-  <div id="leyenda">
-    <div class="leyenda-label">Nivel</div>
-    <button class="filtro-btn" id="filtro-principiante" onclick="toggleFiltro('principiante')">
-      <div class="leyenda-dot" style="background:#2d9c5a"></div>
-      <span>Principiante</span>
-      <span class="check-icon">✓</span>
-    </button>
-    <button class="filtro-btn" id="filtro-intermedio" onclick="toggleFiltro('intermedio')">
-      <div class="leyenda-dot" style="background:#e08c1a"></div>
-      <span>Intermedio</span>
-      <span class="check-icon">✓</span>
-    </button>
-    <button class="filtro-btn" id="filtro-avanzado" onclick="toggleFiltro('avanzado')">
-      <div class="leyenda-dot" style="background:#c0392b"></div>
-      <span>Avanzado</span>
-      <span class="check-icon">✓</span>
-    </button>
+  <!-- FILTROS: dificultad + categoría -->
+  <div id="filtros-wrap">
+
+    <!-- Panel 1: Dificultad -->
+    <div class="filtro-panel">
+      <div class="leyenda-label">Dificultad</div>
+      <button class="filtro-btn" id="filtro-principiante" onclick="toggleFiltro('nivel','principiante')">
+        <div class="leyenda-dot" style="background:#2d9c5a"></div>
+        <span>Principiante</span>
+        <span class="check-icon">✓</span>
+      </button>
+      <button class="filtro-btn" id="filtro-intermedio" onclick="toggleFiltro('nivel','intermedio')">
+        <div class="leyenda-dot" style="background:#e08c1a"></div>
+        <span>Intermedio</span>
+        <span class="check-icon">✓</span>
+      </button>
+      <button class="filtro-btn" id="filtro-avanzado" onclick="toggleFiltro('nivel','avanzado')">
+        <div class="leyenda-dot" style="background:#c0392b"></div>
+        <span>Avanzado</span>
+        <span class="check-icon">✓</span>
+      </button>
+    </div>
+
+    <!-- Panel 2: Categoría -->
+    <div class="filtro-panel">
+      <div class="leyenda-label">Categoría</div>
+      <button class="filtro-btn" id="filtro-cat-playa" onclick="toggleFiltro('categoria','playa')">
+        <div class="leyenda-dot-sq" style="background:#1a7abf"></div>
+        <span>Playa</span>
+        <span class="check-icon">✓</span>
+      </button>
+      <button class="filtro-btn" id="filtro-cat-naturaleza" onclick="toggleFiltro('categoria','naturaleza')">
+        <div class="leyenda-dot-sq" style="background:#2d9c5a"></div>
+        <span>Naturaleza</span>
+        <span class="check-icon">✓</span>
+      </button>
+      <button class="filtro-btn" id="filtro-cat-cultura" onclick="toggleFiltro('categoria','cultura')">
+        <div class="leyenda-dot-sq" style="background:#8b5e3c"></div>
+        <span>Cultura</span>
+        <span class="check-icon">✓</span>
+      </button>
+      <button class="filtro-btn" id="filtro-cat-aventura" onclick="toggleFiltro('categoria','aventura')">
+        <div class="leyenda-dot-sq" style="background:#c0392b"></div>
+        <span>Aventura</span>
+        <span class="check-icon">✓</span>
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -289,12 +352,10 @@
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Verificar sesión al cargar — si no hay sesión manda al login
   sb.auth.getSession().then(({ data }) => {
     if (!data.session) {
       window.location.href = 'login.html';
     } else {
-      // Mostrar email del usuario en el header
       document.getElementById('usuario-email').textContent = data.session.user.email;
     }
   });
@@ -306,6 +367,10 @@
 
 /* =====================================================
    DATOS
+   Cada lugar tiene:
+     - nivel: "principiante" | "intermedio" | "avanzado"
+     - categoria: "playa" | "naturaleza" | "cultura" | "aventura"
+     - imgs: array de URLs (agrega cuantas quieras)
    ===================================================== */
 const lugares = [
   {
@@ -314,11 +379,18 @@ const lugares = [
     subtitulo: "Puerto Caribe de Costa Rica",
     desc: "Puerto Limón es la capital de la provincia de Limón y el principal puerto marítimo de Costa Rica en el Caribe. Es el corazón de la cultura afrocostarricense, con festividades como el Carnaval de Limón en octubre.",
     nivel: "principiante",
+    categoria: "cultura",
     epoca: "Oct–Nov (Carnaval)",
     naturaleza: "Mar Caribe, manglares",
     equipo: ["Ropa liviana", "Zapatos cómodos", "Protector solar", "Repelente de mosquitos", "Paraguas plegable"],
     tags: ["Puerto histórico", "Cultura afrocaribe", "Carnaval", "Gastronomía"],
-    imgs: ["https://costarica.org/wp-content/uploads/2017/09/Limon2.jpg"]
+    imgs: [
+      "https://costarica.org/wp-content/uploads/2017/09/Limon2.jpg"
+      /* Agrega más URLs aquí, por ejemplo:
+      "https://ejemplo.com/limon2.jpg",
+      "https://ejemplo.com/limon3.jpg"
+      */
+    ]
   },
   {
     latlng: [9.7319895, -82.8211192],
@@ -326,11 +398,14 @@ const lugares = [
     subtitulo: "Cahuita, Limón",
     desc: "Una de las playas más hermosas del Caribe costarricense, junto al Parque Nacional Cahuita. Sus arrecifes de coral son los más grandes del país, perfectos para snorkel entre peces tropicales.",
     nivel: "principiante",
+    categoria: "playa",
     epoca: "Feb–Apr y Sep–Oct",
     naturaleza: "Arrecife de coral, bosque tropical",
     equipo: ["Traje de baño", "Snorkel y gafas", "Repelente biodegradable", "Sandalias acuáticas", "Protector solar reef-safe"],
     tags: ["Playa", "Snorkel", "Parque Nacional", "Peces tropicales"],
-    imgs: ["https://descubramoscostarica.com/sites/default/files/styles/wide/public/2021-12/cahuita-1.jpg.webp?itok=ghhC7i06"]
+    imgs: [
+      "https://descubramoscostarica.com/sites/default/files/styles/wide/public/2021-12/cahuita-1.jpg.webp?itok=ghhC7i06"
+    ]
   },
   {
     latlng: [9.643367832448668, -82.68753794816715],
@@ -338,11 +413,14 @@ const lugares = [
     subtitulo: "Puerto Viejo de Talamanca, Limón",
     desc: "Considerada una de las playas más vírgenes de Costa Rica. Sus aguas turquesas y la selva que llega hasta la arena crean un ambiente de película. Ideal para nadar, bucear y observar monos y perezosos.",
     nivel: "principiante",
+    categoria: "playa",
     epoca: "Feb–Apr y Sep–Oct",
     naturaleza: "Selva tropical, aguas turquesas",
     equipo: ["Traje de baño", "Repelente de mosquitos", "Binoculares", "Cámara sumergible", "Ropa de secado rápido"],
     tags: ["Playa virgen", "Turquesa", "Avistamiento de fauna", "Buceo"],
-    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC1BIMzYFSf2hNvB8ISK2sinM_aHMcgzW35Q&s"]
+    imgs: [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC1BIMzYFSf2hNvB8ISK2sinM_aHMcgzW35Q&s"
+    ]
   },
   {
     latlng: [10.0167, -83.3167],
@@ -350,11 +428,14 @@ const lugares = [
     subtitulo: "Tortuguero, Limón",
     desc: "El 'Amazonas de Costa Rica'. Una intrincada red de canales selváticos donde viven monos, caimanes, manatíes y delfines. De julio a octubre llegan tortugas baulas y verdes a desovar en sus playas negras.",
     nivel: "intermedio",
+    categoria: "naturaleza",
     epoca: "Jul–Oct (tortugas), Mar–May (canales)",
     naturaleza: "Canales, selva lluviosa, playa negra",
     equipo: ["Botas de hule o impermeables", "Chubasquero", "Repelente DEET fuerte", "Linterna de cabeza", "Ropa de manga larga", "Binoculares"],
     tags: ["Tortugas marinas", "Canales", "Monos", "Caimanes", "Manatíes"],
-    imgs: ["https://costarica.org/wp-content/uploads/2014/12/Tortuguero-Canal.jpg"]
+    imgs: [
+      "https://costarica.org/wp-content/uploads/2014/12/Tortuguero-Canal.jpg"
+    ]
   },
   {
     latlng: [9.6582, -82.7524],
@@ -362,11 +443,14 @@ const lugares = [
     subtitulo: "Puerto Viejo de Talamanca",
     desc: "Centro de rescate y rehabilitación de fauna silvestre fundado por primatólogos europeos. Alberga perezosos, monos, tucanes, iguanas y serpientes en proceso de rehabilitación. Una experiencia educativa única.",
     nivel: "principiante",
+    categoria: "naturaleza",
     epoca: "Todo el año (abren martes–domingo)",
     naturaleza: "Fauna rescatada, selva secundaria",
     equipo: ["Ropa cómoda de colores neutros", "Zapatos cerrados", "Repelente suave", "Cámara"],
     tags: ["Perezosos", "Fauna silvestre", "Educación ambiental", "Familia"],
-    imgs: ["https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/df/91/6c/jrc.jpg?w=1200&h=900&s=1"]
+    imgs: [
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/df/91/6c/jrc.jpg?w=1200&h=900&s=1"
+    ]
   },
   {
     latlng: [9.8736, -82.9381],
@@ -374,11 +458,14 @@ const lugares = [
     subtitulo: "Siquirres, Limón",
     desc: "Considerado uno de los mejores ríos para rafting del mundo por National Geographic. Sus rápidos de clase III y IV atraviesan un cañón con cascadas y selva virgen.",
     nivel: "avanzado",
+    categoria: "aventura",
     epoca: "Jun–Oct (caudal alto), Nov–Mar (caudal medio)",
     naturaleza: "Cañón selvático, cascadas, rapidos",
     equipo: ["Ropa deportiva que moje", "Sandalias con agarre", "Bolsa impermeable para pertenencias", "Casco y chaleco (los provee la empresa)", "Crema solar resistente al agua"],
     tags: ["Rafting clase IV", "Cañón", "Cascadas", "Aventura extrema"],
-    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzlTWzPs2R1UqGwHLB960C02J2zyjmOlupNg&s"]
+    imgs: [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzlTWzPs2R1UqGwHLB960C02J2zyjmOlupNg&s"
+    ]
   },
   {
     latlng: [9.5831, -82.7758],
@@ -386,11 +473,14 @@ const lugares = [
     subtitulo: "Talamanca, Limón",
     desc: "Visita el territorio ancestral del pueblo Bribri en las faldas de la Cordillera de Talamanca. Conoce sus tradiciones, prácticas de cacao sagrado y medicina natural.",
     nivel: "intermedio",
+    categoria: "cultura",
     epoca: "Todo el año (evitar semana lluviosa May–Jun)",
     naturaleza: "Selva montañosa, ríos, cacao silvestre",
     equipo: ["Botas impermeables de caña alta", "Ropa de manga larga", "Repelente fuerte", "Cantimplora", "Impermeable liviano"],
     tags: ["Cultura indígena", "Cacao", "Ecoturismo", "Senderismo"],
-    imgs: ["https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png"]
+    imgs: [
+      "https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png"
+    ]
   }
 ];
 
@@ -412,8 +502,16 @@ function crearIcono(nivel) {
   return L.icon(iconos[nivel] || iconos.principiante);
 }
 
+/* Registros de marcadores por nivel Y por categoría */
 const marcadoresPorNivel = { principiante: [], intermedio: [], avanzado: [] };
-const filtrosActivos = { principiante: true, intermedio: true, avanzado: true };
+const marcadoresPorCategoria = { playa: [], naturaleza: [], cultura: [], aventura: [] };
+
+/* Estado de filtros activos */
+const filtrosNivel     = { principiante: true, intermedio: true, avanzado: true };
+const filtrosCategoria = { playa: true, naturaleza: true, cultura: true, aventura: true };
+
+/* Guardamos referencia al lugar por marcador para evaluar visibilidad cruzada */
+const markerData = new Map();
 
 lugares.forEach(lugar => {
   const marker = L.marker(lugar.latlng, { icon: crearIcono(lugar.nivel) }).addTo(map);
@@ -422,15 +520,49 @@ lugares.forEach(lugar => {
   });
   marker.on('click', () => abrirPanel(lugar));
   marcadoresPorNivel[lugar.nivel].push(marker);
+  if (marcadoresPorCategoria[lugar.categoria]) {
+    marcadoresPorCategoria[lugar.categoria].push(marker);
+  }
+  markerData.set(marker, lugar);
 });
 
-function toggleFiltro(nivel) {
-  filtrosActivos[nivel] = !filtrosActivos[nivel];
-  document.getElementById('filtro-' + nivel).classList.toggle('apagado', !filtrosActivos[nivel]);
-  (marcadoresPorNivel[nivel] || []).forEach(m => {
-    if (filtrosActivos[nivel]) { m.addTo(map); } else { m.remove(); }
+/* Actualiza visibilidad de todos los marcadores según ambos filtros activos */
+function actualizarMarcadores() {
+  markerData.forEach((lugar, marker) => {
+    const nivelOk     = filtrosNivel[lugar.nivel];
+    const categoriaOk = filtrosCategoria[lugar.categoria];
+    if (nivelOk && categoriaOk) {
+      marker.addTo(map);
+    } else {
+      marker.remove();
+    }
   });
 }
+
+function toggleFiltro(tipo, valor) {
+  if (tipo === 'nivel') {
+    filtrosNivel[valor] = !filtrosNivel[valor];
+    document.getElementById('filtro-' + valor).classList.toggle('apagado', !filtrosNivel[valor]);
+  } else {
+    filtrosCategoria[valor] = !filtrosCategoria[valor];
+    document.getElementById('filtro-cat-' + valor).classList.toggle('apagado', !filtrosCategoria[valor]);
+  }
+  actualizarMarcadores();
+}
+
+/* ── Emojis de categoría ── */
+const categoriaEmoji = {
+  playa: '🏖️',
+  naturaleza: '🌿',
+  cultura: '🏛️',
+  aventura: '🧗'
+};
+const categoriaNombre = {
+  playa: 'Playa',
+  naturaleza: 'Naturaleza',
+  cultura: 'Cultura',
+  aventura: 'Aventura'
+};
 
 /* ── Galería ── */
 let fotoActual = 0;
@@ -441,6 +573,7 @@ function construirGaleria(imgs) {
   wrap.querySelectorAll('.gallery-slide').forEach(el => el.remove());
   const placeholder = document.getElementById('panel-img-placeholder');
   const dotsEl = document.getElementById('gallery-dots');
+  const counter = document.getElementById('gallery-counter');
   dotsEl.innerHTML = '';
   fotoActual = 0;
   fotosTotal = imgs ? imgs.length : 0;
@@ -449,10 +582,12 @@ function construirGaleria(imgs) {
     placeholder.style.display = 'flex';
     document.getElementById('gallery-prev').classList.add('hidden');
     document.getElementById('gallery-next').classList.add('hidden');
+    counter.classList.add('hidden');
     return;
   }
 
   placeholder.style.display = 'none';
+
   imgs.forEach((url, i) => {
     const slide = document.createElement('div');
     slide.className = 'gallery-slide' + (i > 0 ? ' hidden' : '');
@@ -461,6 +596,7 @@ function construirGaleria(imgs) {
     img.onerror = () => { slide.style.background = '#2d6a44'; img.style.display = 'none'; };
     slide.appendChild(img);
     wrap.insertBefore(slide, document.getElementById('gallery-prev'));
+
     if (imgs.length > 1) {
       const dot = document.createElement('button');
       dot.className = 'gdot' + (i === 0 ? ' active' : '');
@@ -472,6 +608,14 @@ function construirGaleria(imgs) {
   const mostrarFlechas = imgs.length > 1;
   document.getElementById('gallery-prev').classList.toggle('hidden', !mostrarFlechas);
   document.getElementById('gallery-next').classList.toggle('hidden', !mostrarFlechas);
+
+  /* Contador de fotos */
+  if (imgs.length > 1) {
+    counter.classList.remove('hidden');
+    counter.textContent = '1 / ' + imgs.length;
+  } else {
+    counter.classList.add('hidden');
+  }
 }
 
 function irAFoto(idx) {
@@ -481,6 +625,10 @@ function irAFoto(idx) {
   fotoActual = (idx + fotosTotal) % fotosTotal;
   slides[fotoActual].classList.remove('hidden');
   document.querySelectorAll('.gdot').forEach((d, i) => d.classList.toggle('active', i === fotoActual));
+  const counter = document.getElementById('gallery-counter');
+  if (!counter.classList.contains('hidden')) {
+    counter.textContent = (fotoActual + 1) + ' / ' + fotosTotal;
+  }
 }
 
 function cambiarFoto(dir) { irAFoto(fotoActual + dir); }
@@ -491,6 +639,12 @@ function abrirPanel(lugar) {
   const nivelTextos = { principiante: '🟢 Principiante', intermedio: '🟡 Intermedio', avanzado: '🔴 Avanzado' };
   nivelEl.textContent = nivelTextos[lugar.nivel] || lugar.nivel;
   nivelEl.className = 'nivel-' + lugar.nivel;
+
+  /* Badge de categoría */
+  const catBadge = document.getElementById('panel-categoria-badge');
+  const cat = lugar.categoria || 'naturaleza';
+  catBadge.textContent = (categoriaEmoji[cat] || '') + ' ' + (categoriaNombre[cat] || cat);
+
   document.getElementById('panel-title').textContent = lugar.nombre;
   document.getElementById('panel-subtitle').textContent = lugar.subtitulo;
   document.getElementById('panel-desc').textContent = lugar.desc;
