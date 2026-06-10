@@ -5,14 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Geo Caribe — Costa Rica</title>
 
+  <!-- Leaflet: librería de mapas interactivos -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- Fuentes tipográficas de Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Supabase: cliente para autenticación de usuarios -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* Reset básico y box-sizing global */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* Variables de color y tipografía del tema */
     :root {
       --verde: #1a4a2e;
       --verde-med: #2d6a44;
@@ -28,9 +33,10 @@
       --bg-panel: #faf8f4;
     }
 
+    /* Fondo general y fuente base */
     html, body { height: 100%; overflow: hidden; font-family: 'DM Sans', sans-serif; background: var(--crema); }
 
-    /* ── HEADER ── */
+    /* ── HEADER: barra superior fija con logo, título y controles ── */
     #header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
       height: 56px;
@@ -38,7 +44,9 @@
       display: flex; align-items: center; padding: 0 16px; gap: 12px;
       border-bottom: 2px solid var(--verde-claro);
     }
+    /* Logo SVG en el header */
     #header-logo { width: 34px; height: 34px; flex-shrink: 0; }
+    /* Nombre de la app y subtítulo de región */
     #header-title {
       font-family: 'Playfair Display', serif;
       font-size: 17px; font-weight: 600;
@@ -51,10 +59,11 @@
       letter-spacing: 0.12em; text-transform: uppercase;
     }
 
-    /* ── BUSCADOR EN HEADER ── */
+    /* ── BUSCADOR dentro del header ── */
     #search-wrap {
       flex: 1; max-width: 340px; position: relative;
     }
+    /* Campo de texto del buscador */
     #search-input {
       width: 100%; padding: 7px 34px 7px 14px;
       border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.2);
@@ -68,6 +77,7 @@
       background: rgba(255,255,255,0.18);
     }
     #search-input::placeholder { color: rgba(255,255,255,0.5); }
+    /* Botón para limpiar el texto del buscador */
     #search-clear {
       position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
       background: none; border: none; cursor: pointer;
@@ -75,6 +85,7 @@
       display: none; line-height: 1; padding: 2px;
     }
     #search-clear:hover { color: white; }
+    /* Lista desplegable con los resultados de búsqueda */
     #search-results {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0;
       background: white; border-radius: 14px;
@@ -82,6 +93,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.13);
       display: none; overflow: hidden; z-index: 3000;
     }
+    /* Cada resultado individual en el dropdown */
     .search-item {
       padding: 10px 16px; cursor: pointer; border-bottom: 1px solid var(--crema-oscura);
       display: flex; align-items: center; gap: 10px;
@@ -89,12 +101,15 @@
     }
     .search-item:last-child { border-bottom: none; }
     .search-item:hover { background: var(--crema); }
+    /* Punto de color que indica el nivel del lugar en el resultado */
     .search-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    /* Mensaje cuando no hay coincidencias en la búsqueda */
     .search-no-result {
       padding: 12px 16px; font-size: 13px; color: var(--muted);
       font-style: italic; text-align: center;
     }
 
+    /* Botones del lado derecho del header: inicio, email y salir */
     #header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     #btn-inicio {
       background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
@@ -103,6 +118,7 @@
       letter-spacing: 0.04em; transition: background 0.2s; white-space: nowrap;
     }
     #btn-inicio:hover { background: rgba(255,255,255,0.2); }
+    /* Muestra el email del usuario autenticado */
     #usuario-email { font-size: 12px; color: var(--hoja); font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em; }
     #btn-logout {
       background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
@@ -112,39 +128,46 @@
     }
     #btn-logout:hover { background: rgba(255,80,80,0.25); }
 
+    /* Contenedor del mapa, ocupa todo el espacio bajo el header */
     #map-wrap { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; }
     #map { width: 100%; height: 100%; }
 
-    /* ── SIDE PANEL ── */
+    /* ── PANEL LATERAL: se desliza desde la derecha al hacer clic en un marcador ── */
     #side-panel {
       position: absolute; top: 0; right: -440px; width: 420px; height: 100%;
       background: var(--bg-panel); border-left: 1px solid var(--crema-oscura);
       transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
       z-index: 1000; display: flex; flex-direction: column; overflow: hidden;
     }
+    /* Clase que activa el panel empujándolo a la vista */
     #side-panel.open { right: 0; }
 
-    /* ── IMAGE GALLERY ── */
+    /* ── GALERÍA DE IMÁGENES en la parte superior del panel ── */
     #panel-img-wrap {
       width: 100%; height: 200px; flex-shrink: 0; position: relative;
       overflow: hidden; background: var(--verde-med);
     }
+    /* Cada slide de imagen */
     .gallery-slide {
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
       transition: opacity 0.4s;
     }
     .gallery-slide img { width: 100%; height: 100%; object-fit: cover; }
+    /* Slide oculto (no activo) */
     .gallery-slide.hidden { opacity: 0; pointer-events: none; }
+    /* Ícono de planta que se muestra si no hay imágenes */
     #panel-img-placeholder {
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center; font-size: 64px;
       z-index: 2;
     }
+    /* Gradiente en la parte inferior de la imagen para que el texto encima sea legible */
     #panel-img-wrap::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
       background: linear-gradient(transparent, var(--bg-panel)); pointer-events: none; z-index: 3;
     }
+    /* Flechas para navegar entre imágenes */
     .gallery-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
       z-index: 10; background: rgba(0,0,0,0.45); border: none;
@@ -156,6 +179,7 @@
     #gallery-prev { left: 10px; }
     #gallery-next { right: 10px; }
     .gallery-arrow.hidden { display: none; }
+    /* Puntos indicadores de la foto activa */
     #gallery-dots {
       position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
       z-index: 10; display: flex; gap: 5px;
@@ -167,6 +191,7 @@
     }
     .gdot.active { background: white; }
 
+    /* Botón para cerrar el panel lateral */
     #panel-close {
       position: absolute; top: 10px; right: 10px; z-index: 10;
       background: rgba(0,0,0,0.45); border: none; border-radius: 50%;
@@ -175,9 +200,11 @@
     }
     #panel-close:hover { background: rgba(0,0,0,0.65); }
 
+    /* Área de contenido del panel con scroll */
     #panel-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
     #panel-body { padding: 12px 20px 20px; overflow-y: auto; flex: 1; }
 
+    /* Etiqueta de nivel con colores según dificultad */
     #panel-nivel {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
@@ -186,31 +213,38 @@
     .nivel-principiante { background: #e6f4ea; color: #2d6a44; }
     .nivel-intermedio    { background: #fff4e0; color: #8b5e1c; }
     .nivel-avanzado      { background: #fdecea; color: #a93226; }
+    /* Título del lugar */
     #panel-title {
       font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600;
       color: var(--texto); margin-bottom: 2px; line-height: 1.2;
     }
+    /* Subtítulo con ubicación */
     #panel-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    /* Descripción larga del lugar */
     #panel-desc { font-size: 14px; line-height: 1.7; color: var(--texto); margin-bottom: 16px; }
+    /* Cuadrícula de 2 columnas para info rápida (época, naturaleza) */
     .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
     .info-card { background: white; border: 1px solid var(--crema-oscura); border-radius: 10px; padding: 10px 12px; }
     .info-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
     .info-card-value { font-size: 13px; font-weight: 500; color: var(--texto); }
     .info-card-icon { font-size: 18px; margin-bottom: 4px; }
+    /* Títulos de sección dentro del panel */
     .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; margin-bottom: 8px; margin-top: 16px; }
+    /* Contenedor de etiquetas de equipo recomendado */
     #panel-equipo { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
     .equipo-tag {
       font-size: 12px; padding: 4px 10px; border-radius: 20px;
       background: var(--crema-oscura); color: var(--verde);
       font-weight: 500; border: 1px solid rgba(74,148,99,0.2);
     }
+    /* Contenedor de tags de características del lugar */
     #panel-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
     .ptag {
       font-size: 12px; padding: 4px 10px; border-radius: 20px;
       background: #e8f4ec; color: var(--verde-med); border: 1px solid rgba(74,148,99,0.15);
     }
 
-    /* ── TOOLTIP DE NIVEL ── */
+    /* ── TOOLTIP que aparece al pasar el mouse sobre los filtros de nivel ── */
     .filtro-btn { position: relative; }
     .nivel-tooltip {
       display: none;
@@ -229,6 +263,7 @@
       z-index: 2000;
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
+    /* Triángulo indicador del tooltip */
     .nivel-tooltip::before {
       content: '';
       position: absolute;
@@ -240,26 +275,32 @@
     }
     .filtro-btn:hover .nivel-tooltip { display: block; }
 
-    /* ── RESPONSIVE MÓVIL ── */
+    /* ── RESPONSIVE: ajustes para pantallas menores a 600px ── */
     @media (max-width: 600px) {
       #header { height: auto; min-height: 56px; flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
       #header-title { font-size: 15px; }
+      /* El buscador pasa a ocupar toda la segunda fila del header */
       #search-wrap { order: 3; flex: 1 1 100%; max-width: 100%; }
       #header-right { margin-left: auto; gap: 6px; }
+      /* El email se oculta en móvil por falta de espacio */
       #usuario-email { display: none; }
       #btn-inicio, #btn-logout { font-size: 11px; padding: 4px 10px; }
+      /* El mapa baja para dejar espacio al header de dos filas */
       #map-wrap { top: 100px; }
+      /* El panel ocupa todo el ancho en móvil */
       #side-panel { width: 100%; right: -100%; }
       #leyenda { bottom: 12px; left: 8px; padding: 8px 10px; }
       .filtro-btn { font-size: 11px; padding: 2px 4px; }
-      /* Ocultar leyenda cuando el panel está abierto en móvil */
+      /* La leyenda se oculta cuando el panel lateral está abierto */
       #side-panel.open ~ #leyenda { display: none; }
+      /* Los tooltips de nivel no se muestran en móvil */
       .nivel-tooltip { display: none !important; }
     }
     @media (max-width: 400px) {
       #header-title span { display: none; }
     }
 
+    /* Estilo del tooltip que aparece al pasar el mouse sobre los marcadores del mapa */
     .tucan-tooltip {
       background: white !important; border: 1px solid rgba(0,0,0,0.12) !important;
       border-radius: 8px !important; font-family: 'DM Sans', sans-serif !important;
@@ -268,17 +309,19 @@
     }
     .tucan-tooltip::before { display: none !important; }
 
-    /* ── LEYENDA — NIVEL + EQUIPAJE ── */
+    /* ── LEYENDA: caja con filtros de nivel en la esquina inferior izquierda del mapa ── */
     #leyenda {
       position: absolute; bottom: 20px; left: 12px; z-index: 1000;
       background: white; border: 1px solid var(--crema-oscura);
       border-radius: 12px; padding: 10px 14px; font-size: 12px;
       min-width: 170px;
     }
+    /* Título de la sección de filtros */
     .leyenda-label {
       font-size: 11px; font-weight: 500; color: var(--muted);
       margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.08em;
     }
+    /* Botón de filtro individual: punto de color + nombre del nivel */
     .filtro-btn {
       display: flex; align-items: center; gap: 7px;
       margin-bottom: 5px; background: none; border: none;
@@ -289,11 +332,14 @@
     }
     .filtro-btn:last-child { margin-bottom: 0; }
     .filtro-btn:hover { background: var(--crema-oscura); }
+    /* Estado apagado: el nivel está oculto en el mapa */
     .filtro-btn.apagado { opacity: 0.35; }
     .filtro-btn .leyenda-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    /* Checkmark que indica que el filtro está activo */
     .filtro-btn .check-icon { margin-left: auto; font-size: 11px; color: var(--verde-med); }
     .filtro-btn.apagado .check-icon { visibility: hidden; }
 
+    /* Scrollbar mínima en el cuerpo del panel */
     #panel-body::-webkit-scrollbar { width: 4px; }
     #panel-body::-webkit-scrollbar-track { background: transparent; }
     #panel-body::-webkit-scrollbar-thumb { background: var(--crema-oscura); border-radius: 4px; }
@@ -301,7 +347,9 @@
 </head>
 <body>
 
+<!-- HEADER: barra superior con logo, buscador y controles de sesión -->
 <div id="header">
+  <!-- Logo SVG hecho a mano con formas de hojas -->
   <svg id="header-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M8 28 C5 22, 3 14, 10 8 C12 6, 14 7, 13 10 C12 14, 9 18, 10 24 Z" fill="#4a9463" opacity="0.85"/>
     <path d="M18 28 C22 22, 26 14, 20 7 C18 5, 16 7, 17 10 C18 14, 21 18, 20 24 Z" fill="#6ab87a" opacity="0.85"/>
@@ -316,13 +364,14 @@
     <span>Costa Rica · Limon</span>
   </div>
 
-  <!-- BUSCADOR EN EL HEADER -->
+  <!-- Buscador: filtra lugares por nombre o subtítulo -->
   <div id="search-wrap">
     <input type="text" id="search-input" placeholder="Buscar lugar… (ej: Cahuita, Pacuare)" autocomplete="off"/>
     <button id="search-clear" onclick="limpiarBusqueda()" title="Limpiar">✕</button>
     <div id="search-results"></div>
   </div>
 
+  <!-- Controles de sesión: email del usuario, botón de inicio y logout -->
   <div id="header-right">
     <span id="usuario-email"></span>
     <button id="btn-inicio" onclick="volverAlInicio()">↩ Inicio</button>
@@ -330,24 +379,32 @@
   </div>
 </div>
 
+<!-- Contenedor principal: mapa + panel lateral + leyenda -->
 <div id="map-wrap">
+  <!-- El mapa de Leaflet se renderiza aquí -->
   <div id="map"></div>
 
+  <!-- Panel lateral deslizable con el detalle del lugar seleccionado -->
   <div id="side-panel">
+    <!-- Sección de imágenes con galería navegable -->
     <div id="panel-img-wrap">
+      <!-- Ícono placeholder si no hay imágenes -->
       <div id="panel-img-placeholder">🌿</div>
       <button class="gallery-arrow hidden" id="gallery-prev" onclick="cambiarFoto(-1)">&#8249;</button>
       <button class="gallery-arrow hidden" id="gallery-next" onclick="cambiarFoto(1)">&#8250;</button>
       <div id="gallery-dots"></div>
     </div>
+    <!-- Botón para cerrar el panel -->
     <button id="panel-close" onclick="cerrarPanel()">✕</button>
 
+    <!-- Cuerpo del panel: nivel, título, descripción e info adicional -->
     <div id="panel-content">
       <div id="panel-body">
         <div id="panel-nivel" class="nivel-principiante">🟢 Principiante</div>
         <p id="panel-title">Nombre</p>
         <p id="panel-subtitle">Subtítulo</p>
         <p id="panel-desc">Descripción</p>
+        <!-- Tarjetas de info rápida -->
         <div class="info-row">
           <div class="info-card">
             <div class="info-card-icon">🗓️</div>
@@ -368,9 +425,10 @@
     </div>
   </div>
 
-  <!-- LEYENDA: NIVEL + EQUIPAJE -->
+  <!-- Leyenda de niveles con filtros clicables -->
   <div id="leyenda">
     <div class="leyenda-label">Nivel</div>
+    <!-- Cada botón muestra/oculta los marcadores de ese nivel en el mapa -->
     <button class="filtro-btn" id="filtro-principiante" onclick="toggleFiltro('principiante')">
       <div class="leyenda-dot" style="background:#2d9c5a"></div>
       <span>Principiante</span>
@@ -393,27 +451,32 @@
 </div>
 
 <script>
-  /* ── SUPABASE ── */
+  /* ── SUPABASE: inicialización del cliente con URL y clave pública ── */
   const SUPABASE_URL = 'https://ipotudrokwjhmhdxtrko.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_R5Eo0TozjpknIwfjQXz_xw_Mbktj4Ok';
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  /* Verifica si hay sesión activa; si no, redirige al login */
   sb.auth.getSession().then(({ data }) => {
     if (!data.session) {
       window.location.href = 'login.html';
     } else {
+      /* Muestra el email del usuario en el header */
       document.getElementById('usuario-email').textContent = data.session.user.email;
     }
   });
 
+  /* Cierra la sesión en Supabase y redirige al login */
   async function cerrarSesion() {
     await sb.auth.signOut();
     window.location.href = 'login.html';
   }
 
 /* =====================================================
-   DATOS
+   DATOS: array con la información de cada lugar
+   Cada objeto tiene: coordenadas, nombre, descripción,
+   nivel de dificultad, época ideal, equipo y fotos.
    ===================================================== */
 const lugares = [
   {
@@ -590,14 +653,17 @@ const lugares = [
 ];
 
 /* =====================================================
-   MAPA
+   MAPA: inicialización con Leaflet
+   Centro en coordenadas del Caribe costarricense, zoom 9
    ===================================================== */
 const map = L.map('map').setView([9.82, -82.9], 9);
 
+/* Capa base de tiles de OpenStreetMap */
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
+/* Devuelve un ícono de Leaflet según el nivel del lugar */
 function crearIcono(nivel) {
   const iconos = {
     principiante: { iconUrl: 'https://raw.githubusercontent.com/Eslias/Geo-caribe.github.io/main/GeoCaribeProyecto/principiante1.png', iconSize: [40, 40], iconAnchor: [20, 40], tooltipAnchor: [22, -20] },
@@ -607,20 +673,27 @@ function crearIcono(nivel) {
   return L.icon(iconos[nivel] || iconos.principiante);
 }
 
+/* Agrupa marcadores por nivel para poder mostrarlos/ocultarlos con los filtros */
 const marcadoresPorNivel = { principiante: [], intermedio: [], avanzado: [] };
+/* Estado actual de cada filtro (true = visible en el mapa) */
 const filtrosActivos = { principiante: true, intermedio: true, avanzado: true };
+/* Índice rápido para buscar un marcador por nombre del lugar */
 const marcadorPorNombre = {};
 
+/* Crea un marcador por cada lugar y lo agrega al mapa */
 lugares.forEach(lugar => {
   const marker = L.marker(lugar.latlng, { icon: crearIcono(lugar.nivel) }).addTo(map);
+  /* Tooltip con el nombre que aparece al pasar el mouse */
   marker.bindTooltip(`<strong>${lugar.nombre}</strong>`, {
     direction: 'right', className: 'tucan-tooltip', offset: [8, -21], permanent: false, sticky: false
   });
+  /* Al hacer clic en el marcador, abre el panel lateral */
   marker.on('click', () => abrirPanel(lugar));
   marcadoresPorNivel[lugar.nivel].push(marker);
   marcadorPorNombre[lugar.nombre.toLowerCase()] = { marker, lugar };
 });
 
+/* Activa o desactiva la visibilidad de todos los marcadores de un nivel */
 function toggleFiltro(nivel) {
   filtrosActivos[nivel] = !filtrosActivos[nivel];
   document.getElementById('filtro-' + nivel).classList.toggle('apagado', !filtrosActivos[nivel]);
@@ -630,15 +703,17 @@ function toggleFiltro(nivel) {
 }
 
 /* =====================================================
-   BUSCADOR
+   BUSCADOR: filtra lugares en tiempo real mientras se escribe
    ===================================================== */
 function buscar(query) {
   const q = query.trim().toLowerCase();
   const resultsEl = document.getElementById('search-results');
+  /* Muestra el botón de limpiar solo si hay texto */
   document.getElementById('search-clear').style.display = q ? 'block' : 'none';
 
   if (!q) { resultsEl.style.display = 'none'; return; }
 
+  /* Filtra por coincidencia en nombre o subtítulo */
   const coincidencias = lugares.filter(l =>
     l.nombre.toLowerCase().includes(q) ||
     l.subtitulo.toLowerCase().includes(q)
@@ -651,6 +726,7 @@ function buscar(query) {
     return;
   }
 
+  /* Colores del punto según nivel para cada resultado */
   const colorNivel = { principiante: '#2d9c5a', intermedio: '#e08c1a', avanzado: '#c0392b' };
   resultsEl.innerHTML = coincidencias.map(l => `
     <div class="search-item" onclick="seleccionarLugar('${l.nombre.replace(/'/g,"\\'")}')">
@@ -663,6 +739,7 @@ function buscar(query) {
   `).join('');
 }
 
+/* Cuando el usuario elige un resultado: cierra el dropdown, abre el panel y centra el mapa */
 function seleccionarLugar(nombre) {
   const key = nombre.toLowerCase();
   const entry = marcadorPorNombre[key];
@@ -673,27 +750,33 @@ function seleccionarLugar(nombre) {
   map.flyTo(entry.lugar.latlng, 13, { duration: 1 });
 }
 
+/* Limpia el campo de búsqueda y oculta resultados */
 function limpiarBusqueda() {
   document.getElementById('search-input').value = '';
   document.getElementById('search-results').style.display = 'none';
   document.getElementById('search-clear').style.display = 'none';
 }
 
+/* Escucha cambios en el input del buscador */
 document.getElementById('search-input').addEventListener('input', e => buscar(e.target.value));
+/* Cierra el dropdown al hacer clic fuera del buscador */
 document.addEventListener('click', e => {
   if (!document.getElementById('search-wrap').contains(e.target))
     document.getElementById('search-results').style.display = 'none';
 });
 
 /* =====================================================
-   PANEL
+   GALERÍA DE IMÁGENES en el panel lateral
    ===================================================== */
    
+/* Índice de la foto activa y total de fotos del lugar actual */
 let fotoActual = 0;
 let fotosTotal = 0;
 
+/* Construye los slides, puntos y flechas de la galería para un lugar */
 function construirGaleria(imgs) {
   const wrap = document.getElementById('panel-img-wrap');
+  /* Limpia slides anteriores */
   wrap.querySelectorAll('.gallery-slide').forEach(el => el.remove());
   const placeholder = document.getElementById('panel-img-placeholder');
   const dotsEl = document.getElementById('gallery-dots');
@@ -701,6 +784,7 @@ function construirGaleria(imgs) {
   fotoActual = 0;
   fotosTotal = imgs ? imgs.length : 0;
 
+  /* Si no hay imágenes, muestra el ícono de planta */
   if (!imgs || imgs.length === 0) {
     placeholder.style.display = 'flex';
     document.getElementById('gallery-prev').classList.add('hidden');
@@ -711,12 +795,15 @@ function construirGaleria(imgs) {
   placeholder.style.display = 'none';
   imgs.forEach((url, i) => {
     const slide = document.createElement('div');
+    /* Solo el primer slide es visible al abrir */
     slide.className = 'gallery-slide' + (i > 0 ? ' hidden' : '');
     const img = document.createElement('img');
     img.src = url; img.alt = '';
+    /* Si la imagen no carga, pone fondo verde como fallback */
     img.onerror = () => { slide.style.background = '#2d6a44'; img.style.display = 'none'; };
     slide.appendChild(img);
     wrap.insertBefore(slide, document.getElementById('gallery-prev'));
+    /* Crea un punto por cada imagen (solo si hay más de una) */
     if (imgs.length > 1) {
       const dot = document.createElement('button');
       dot.className = 'gdot' + (i === 0 ? ' active' : '');
@@ -725,29 +812,35 @@ function construirGaleria(imgs) {
     }
   });
 
+  /* Muestra las flechas solo si hay más de una imagen */
   const mostrarFlechas = imgs.length > 1;
   document.getElementById('gallery-prev').classList.toggle('hidden', !mostrarFlechas);
   document.getElementById('gallery-next').classList.toggle('hidden', !mostrarFlechas);
 }
 
+/* Cambia a la foto en el índice indicado, actualizando slides y puntos */
 function irAFoto(idx) {
   const slides = document.querySelectorAll('.gallery-slide');
   if (slides.length === 0) return;
   slides[fotoActual].classList.add('hidden');
+  /* Cicla en ambas direcciones con módulo */
   fotoActual = (idx + fotosTotal) % fotosTotal;
   slides[fotoActual].classList.remove('hidden');
   document.querySelectorAll('.gdot').forEach((d, i) => d.classList.toggle('active', i === fotoActual));
 }
 
+/* Avanza o retrocede una foto según la dirección (+1 / -1) */
 function cambiarFoto(dir) { irAFoto(fotoActual + dir); }
 
 /* =====================================================
-   PANEL
+   PANEL LATERAL: muestra la info del lugar seleccionado
    ===================================================== */
 let lugarActual = null;
 
+/* Rellena el panel con los datos del lugar y lo desliza a la vista */
 function abrirPanel(lugar) {
   lugarActual = lugar;
+  /* Texto e ícono del nivel de dificultad */
   const nivelEl = document.getElementById('panel-nivel');
   const nivelTextos = { principiante: '🟢 Principiante', intermedio: '🟡 Intermedio', avanzado: '🔴 Avanzado' };
   nivelEl.textContent = nivelTextos[lugar.nivel] || lugar.nivel;
@@ -757,17 +850,24 @@ function abrirPanel(lugar) {
   document.getElementById('panel-desc').textContent = lugar.desc;
   document.getElementById('panel-epoca').textContent = lugar.epoca;
   document.getElementById('panel-naturaleza').textContent = lugar.naturaleza;
+  /* Genera los tags de características */
   document.getElementById('panel-tags').innerHTML = lugar.tags.map(t => `<span class="ptag">${t}</span>`).join('');
+  /* Genera las etiquetas de equipo recomendado */
   document.getElementById('panel-equipo').innerHTML = (lugar.equipo || []).map(e => `<span class="equipo-tag">${e}</span>`).join('');
+  /* Construye la galería; admite array de imgs o imagen única legada */
   construirGaleria(lugar.imgs || (lugar.img ? [lugar.img] : []));
+  /* Desliza el panel a la vista */
   document.getElementById('side-panel').classList.add('open');
+  /* Centra el mapa en el lugar, manteniendo el zoom actual si es mayor a 11 */
   map.flyTo(lugar.latlng, Math.max(map.getZoom(), 11), { duration: 0.8 });
 }
 
+/* Oculta el panel lateral */
 function cerrarPanel() {
   document.getElementById('side-panel').classList.remove('open');
 }
 
+/* Cierra el panel y aleja el mapa a la vista inicial */
 function volverAlInicio() {
   map.flyTo([9.82, -82.9], 9, { duration: 1 });
   cerrarPanel();
