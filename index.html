@@ -175,7 +175,9 @@
     }
     #panel-close:hover { background: rgba(0,0,0,0.65); }
 
-    #panel-body { padding: 4px 20px 20px; overflow-y: auto; flex: 1; }
+    #panel-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    #panel-body { padding: 12px 20px 20px; overflow-y: auto; flex: 1; }
+
     #panel-nivel {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
@@ -220,43 +222,11 @@
       #side-panel { width: 100%; right: -100%; }
       #leyenda { bottom: 12px; left: 8px; padding: 8px 10px; }
       .filtro-btn { font-size: 11px; padding: 2px 4px; }
+      /* Ocultar leyenda cuando el panel está abierto en móvil */
+      #side-panel.open ~ #leyenda { display: none; }
     }
     @media (max-width: 400px) {
       #header-title span { display: none; }
-    }
-
-    /* ── TABS PANEL ── */
-    #panel-tabs {
-      display: flex; border-bottom: 1.5px solid var(--crema-oscura);
-      padding: 0 20px; flex-shrink: 0; margin-top: 4px;
-    }
-    .panel-tab {
-      padding: 10px 14px; font-size: 12px; font-weight: 500;
-      letter-spacing: 0.06em; color: var(--muted); cursor: pointer;
-      border-bottom: 2px solid transparent; margin-bottom: -1.5px;
-      background: none; border-top: none; border-left: none; border-right: none;
-      font-family: 'DM Sans', sans-serif; text-transform: uppercase;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .panel-tab.active { color: var(--verde); border-bottom-color: var(--verde); }
-    #tab-info { display: block; }
-    #tab-equipo-content { display: none; }
-
-    /* ── EQUIPAJE EN PANEL (tab) ── */
-    #equipo-filter-list { padding: 8px 0; }
-    .equipo-filter-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 7px 20px; cursor: pointer;
-      font-size: 13px; color: var(--texto);
-      border-bottom: 1px solid var(--crema-oscura);
-      transition: background 0.15s;
-    }
-    .equipo-filter-item:last-child { border-bottom: none; }
-    .equipo-filter-item:hover { background: var(--crema); }
-    .equipo-filter-item input[type=checkbox] { accent-color: var(--verde); width: 15px; height: 15px; cursor: pointer; }
-    .equipo-filter-note {
-      font-size: 12px; color: var(--muted); padding: 10px 20px 4px;
-      font-style: italic; line-height: 1.5;
     }
 
     .tucan-tooltip {
@@ -342,12 +312,7 @@
     </div>
     <button id="panel-close" onclick="cerrarPanel()">✕</button>
 
-    <div id="panel-tabs">
-      <button class="panel-tab active" onclick="switchTab('info')">Información</button>
-      <button class="panel-tab" onclick="switchTab('equipo')">Equipaje</button>
-    </div>
-
-    <div id="tab-info">
+    <div id="panel-content">
       <div id="panel-body">
         <div id="panel-nivel" class="nivel-principiante">🟢 Principiante</div>
         <p id="panel-title">Nombre</p>
@@ -370,11 +335,6 @@
         <p class="section-title">Características</p>
         <div id="panel-tags"></div>
       </div>
-    </div>
-
-    <div id="tab-equipo-content">
-      <p class="equipo-filter-note">Marcá el equipo que ya llevás. Los ítems que te faltan se resaltan en el mapa.</p>
-      <div id="equipo-filter-list"></div>
     </div>
   </div>
 
@@ -435,7 +395,8 @@ const lugares = [
     naturaleza: "Mar Caribe, manglares",
     equipo: ["Ropa liviana", "Zapatos cómodos", "Protector solar", "Repelente de mosquitos", "Paraguas plegable"],
     tags: ["Puerto histórico", "Cultura afrocaribe", "Carnaval", "Gastronomía"],
-    imgs: ["https://costarica.org/wp-content/uploads/2017/09/Limon2.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://costarica.org/wp-content/uploads/2017/09/Limon2.jpg", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpO0aEgpdnlxEOEufE5Ce0b2QRV6LdvNqWiw&s"]
   },
   {
     latlng: [9.7319895, -82.8211192],
@@ -447,7 +408,8 @@ const lugares = [
     naturaleza: "Arrecife de coral, bosque tropical",
     equipo: ["Traje de baño", "Snorkel y gafas", "Repelente biodegradable", "Sandalias acuáticas", "Protector solar reef-safe"],
     tags: ["Playa", "Snorkel", "Parque Nacional", "Peces tropicales"],
-    imgs: ["https://descubramoscostarica.com/sites/default/files/styles/wide/public/2021-12/cahuita-1.jpg.webp?itok=ghhC7i06"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://descubramoscostarica.com/sites/default/files/styles/wide/public/2021-12/cahuita-1.jpg.webp?itok=ghhC7i06", "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/58/fe/1b/playa-negra.jpg?w=1200&h=-1&s=1"]
   },
   {
     latlng: [9.643367832448668, -82.68753794816715],
@@ -459,7 +421,8 @@ const lugares = [
     naturaleza: "Selva tropical, aguas turquesas",
     equipo: ["Traje de baño", "Repelente de mosquitos", "Binoculares", "Cámara sumergible", "Ropa de secado rápido"],
     tags: ["Playa virgen", "Turquesa", "Avistamiento de fauna", "Buceo"],
-    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC1BIMzYFSf2hNvB8ISK2sinM_aHMcgzW35Q&s"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC1BIMzYFSf2hNvB8ISK2sinM_aHMcgzW35Q&s", "https://www.creescapes.com/wp-content/uploads/punta-uva-beach-manzanillo.jpg"]
   },
   {
     latlng: [10.0167, -83.3167],
@@ -471,7 +434,11 @@ const lugares = [
     naturaleza: "Canales, selva lluviosa, playa negra",
     equipo: ["Botas de hule o impermeables", "Chubasquero", "Repelente DEET fuerte", "Linterna de cabeza", "Ropa de manga larga", "Binoculares"],
     tags: ["Tortugas marinas", "Canales", "Monos", "Caimanes", "Manatíes"],
-    imgs: ["https://costarica.org/wp-content/uploads/2014/12/Tortuguero-Canal.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: [
+      "https://costarica.org/wp-content/uploads/2014/12/Tortuguero-Canal.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSePolKaXp9QSwgX3ACiTpKXa06gA9BgwaA-w&s"
+    ]
   },
   {
     latlng: [9.6582, -82.7524],
@@ -483,7 +450,8 @@ const lugares = [
     naturaleza: "Fauna rescatada, selva secundaria",
     equipo: ["Ropa cómoda de colores neutros", "Zapatos cerrados", "Repelente suave", "Cámara"],
     tags: ["Perezosos", "Fauna silvestre", "Educación ambiental", "Familia"],
-    imgs: ["https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/df/91/6c/jrc.jpg?w=1200&h=900&s=1"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/df/91/6c/jrc.jpg?w=1200&h=900&s=1","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0aOGkVmBFumjNNTpx4tVuaTfcqDfUsCCtMQ&s"]
   },
   {
     latlng: [9.8736, -82.9381],
@@ -495,7 +463,8 @@ const lugares = [
     naturaleza: "Cañón selvático, cascadas, rápidos",
     equipo: ["Ropa deportiva que moje", "Sandalias con agarre", "Bolsa impermeable para pertenencias", "Casco y chaleco (los provee la empresa)", "Crema solar resistente al agua"],
     tags: ["Rafting clase IV", "Cañón", "Cascadas", "Aventura extrema"],
-    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzlTWzPs2R1UqGwHLB960C02J2zyjmOlupNg&s"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzlTWzPs2R1UqGwHLB960C02J2zyjmOlupNg&s","https://media.tacdn.com/media/attractions-splice-spp-674x446/06/6b/8f/53.jpg"]
   },
   {
     latlng: [9.5831, -82.7758],
@@ -507,7 +476,7 @@ const lugares = [
     naturaleza: "Selva montañosa, ríos, cacao silvestre",
     equipo: ["Botas impermeables de caña alta", "Ropa de manga larga", "Repelente fuerte", "Cantimplora", "Impermeable liviano"],
     tags: ["Cultura indígena", "Cacao", "Ecoturismo", "Senderismo"],
-    imgs: ["https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png"]
+    imgs: ["https://static.wixstatic.com/media/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png/v1/fill/w_658,h_428,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/95f0e3_9b2876e079f94496ad93a0d56dc68672~mv2.png","https://res.cloudinary.com/dqv2d5lem/image/upload/v1767748742/main_casas_bribri_7c1826cf8a.jpg"]
   },
   {
     latlng: [9.6283, -82.6636],
@@ -519,7 +488,7 @@ const lugares = [
     naturaleza: "Refugio nacional, arrecife coralino, bosque de almendros",
     equipo: ["Traje de baño", "Snorkel y gafas", "Kayak (alquiler local)", "Protector solar reef-safe", "Repelente biodegradable", "Cámara sumergible"],
     tags: ["Playa", "Delfines", "Kayak", "Snorkel", "Refugio nacional"],
-    imgs: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Playa_Manzanillo_Costa_Rica.jpg/1280px-Playa_Manzanillo_Costa_Rica.jpg"]
+    imgs: ["https://www.creescapes.com/wp-content/uploads/puerto-viejo-costa-rica-manzanillo-beach.jpg","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpmtDyeSddSkBBxCH0mn2iZsIWzu7cyk0PFg&s"]
   },
   {
     latlng: [9.5550, -82.7000],
@@ -531,7 +500,8 @@ const lugares = [
     naturaleza: "Manglares, humedales, arrecife coralino, bosque primario",
     equipo: ["Botas de hule", "Repelente DEET fuerte", "Ropa de manga larga", "Chubasquero liviano", "Binoculares", "Cantimplora 2L"],
     tags: ["Tortugas laúd", "Manatíes", "Manglares", "Senderismo", "Tapires"],
-    imgs: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Gandoca-Manzanillo_National_Wildlife_Refuge.jpg/1280px-Gandoca-Manzanillo_National_Wildlife_Refuge.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqeTfsmTjGmQ7TyAo9rFl41kSZaYaUmrOP9Q&s","https://d1qqtien6gys07.cloudfront.net/wp-content/uploads/2025/03/gandoca-manzanillo-wildlife-refuge-entrance.jpg"]
   },
   {
     latlng: [10.2167, -83.7667],
@@ -543,7 +513,8 @@ const lugares = [
     naturaleza: "Canales, delta fluvial, selva inundada",
     equipo: ["Equipo de pesca (o alquiler)", "Botas de hule", "Repelente DEET fuerte", "Chubasquero", "Linterna de cabeza", "Botiquín básico"],
     tags: ["Pesca deportiva", "Sábalo real", "Canales", "Remoto", "Naturaleza virgen"],
-    imgs: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Rio_Colorado_Costa_Rica.jpg/1280px-Rio_Colorado_Costa_Rica.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlVikborLlh_pMJKnU0KQKHEckT_VqNqF5fw&s","https://upload.wikimedia.org/wikipedia/commons/3/3b/Barra_del_Colorado_Waterway.jpg"]
   },
   {
     latlng: [10.4348, -83.9867],
@@ -555,7 +526,8 @@ const lugares = [
     naturaleza: "Humedal, lago estacional, galería de vegetación",
     equipo: ["Binoculares de largo alcance", "Guía de aves", "Repelente", "Sombrero de ala ancha", "Protector solar", "Cámara con teleobjetivo"],
     tags: ["Birdwatching", "Humedal RAMSAR", "Caimanes", "Aves acuáticas", "Lancha"],
-    imgs: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Ca%C3%B1o_Negro_Wildlife_Refuge.jpg/1280px-Ca%C3%B1o_Negro_Wildlife_Refuge.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4bodOfSKvyXJQqSLbxOw5ghlmopfoLpLmgA&s","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqMQHdSkq-Qi7TxQTebjO9zID7POzZQDL89g&s"]
   },
   {
     latlng: [10.1878, -83.5600],
@@ -567,7 +539,8 @@ const lugares = [
     naturaleza: "Canal caribeño, jardín tropical, bosque secundario",
     equipo: ["Ropa de colores neutros", "Zapatos cerrados", "Repelente suave", "Cámara", "Paraguas plegable"],
     tags: ["Perezosos", "Rescate animal", "Canales", "Ecoturismo", "Familia"],
-    imgs: ["https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/e6/34/8a/aviarios-del-caribe.jpg?w=1200&h=-1&s=1"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSr7PLGq3g2MNHAqUK6D3v5P5u5rcowh4nYrw&s","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvB-UczJ02t1zeviUsaCgez8PeSAMSqxLuHA&s"]
   },
   {
     latlng: [9.7467, -82.8672],
@@ -579,7 +552,8 @@ const lugares = [
     naturaleza: "Playa volcánica, palmas de coco",
     equipo: ["Tabla de surf (alquiler local)", "Traje de baño", "Protector solar", "Ropa liviana", "Sandalias"],
     tags: ["Surf para principiantes", "Arena negra", "Gastronomía caribeña", "Relajación"],
-    imgs: ["https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Playa_Negra_Cahuita.jpg/1280px-Playa_Negra_Cahuita.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://www.creescapes.com/wp-content/uploads/Playa-Negra.png","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0loFO0QDuqE3Gw-9QtBDBbCxCkVhgi1oeXQ&s"]
   },
   {
     latlng: [9.9500, -83.0167],
@@ -591,15 +565,14 @@ const lugares = [
     naturaleza: "Río de montaña, ribera selvática",
     equipo: ["Ropa deportiva que moje", "Sandalias con agarre", "Casco y chaleco (provistos)", "Bolsa impermeable", "Crema solar resistente al agua"],
     tags: ["Rafting clase III", "Río", "Aves ribereñas", "Aventura", "Accesible"],
-    imgs: ["https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/R%C3%ADo_Reventaz%C3%B3n.jpg/1280px-R%C3%ADo_Reventaz%C3%B3n.jpg"]
+    // ── IMÁGENES ── Agregá más URLs separadas por comas para galería con flechas
+    imgs: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMccIG5BudE6ZbHIQbVIdMOqi1iBiz-fvZWA&s","https://upload.wikimedia.org/wikipedia/commons/a/ab/R%C3%ADo_Reventaz%C3%B3n._Costa_Rica.JPG"]
   }
 ];
 
 /* =====================================================
    EQUIPAJE — lista global única y sin duplicados
    ===================================================== */
-const equipoSeleccionado = new Set();
-
 /* =====================================================
    MAPA
    ===================================================== */
@@ -697,55 +670,9 @@ document.addEventListener('click', e => {
 });
 
 /* =====================================================
-   TABS PANEL
+   PANEL
    ===================================================== */
-function switchTab(tab) {
-  document.querySelectorAll('.panel-tab').forEach((btn, i) => {
-    btn.classList.toggle('active', (i === 0 && tab === 'info') || (i === 1 && tab === 'equipo'));
-  });
-  document.getElementById('tab-info').style.display = tab === 'info' ? 'block' : 'none';
-  document.getElementById('tab-equipo-content').style.display = tab === 'equipo' ? 'block' : 'none';
-}
-
-/* =====================================================
-   FILTRO DE EQUIPAJE — PANEL
-   ===================================================== */
-let lugarActual = null;
-
-function construirFiltroEquipo(lugar) {
-  const lista = document.getElementById('equipo-filter-list');
-  lista.innerHTML = '';
-  lugar.equipo.forEach(item => {
-    const tiene = equipoSeleccionado.has(item);
-    const div = document.createElement('div');
-    div.className = 'equipo-filter-item';
-    const id = 'eq-' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
-    div.innerHTML = `
-      <input type="checkbox" id="${id}" ${tiene ? 'checked' : ''}>
-      <label for="${id}" style="cursor:pointer;flex:1">${item}</label>
-    `;
-    div.querySelector('input').addEventListener('change', e => {
-      if (e.target.checked) equipoSeleccionado.add(item);
-      else equipoSeleccionado.delete(item);
-      actualizarResaltado();
-      actualizarLeyendaEquipo();
-    });
-    lista.appendChild(div);
-  });
-}
-
-function actualizarResaltado() {
-  if (!lugarActual) return;
-  document.querySelectorAll('#equipo-filter-list .equipo-filter-item').forEach(item => {
-    const label = item.querySelector('label').textContent;
-    item.style.opacity = equipoSeleccionado.has(label) ? '1' : '0.65';
-  });
-}
-
-
-/* =====================================================
-   GALERÍA
-   ===================================================== */
+   
 let fotoActual = 0;
 let fotosTotal = 0;
 
@@ -801,6 +728,8 @@ function cambiarFoto(dir) { irAFoto(fotoActual + dir); }
 /* =====================================================
    PANEL
    ===================================================== */
+let lugarActual = null;
+
 function abrirPanel(lugar) {
   lugarActual = lugar;
   const nivelEl = document.getElementById('panel-nivel');
@@ -815,9 +744,6 @@ function abrirPanel(lugar) {
   document.getElementById('panel-tags').innerHTML = lugar.tags.map(t => `<span class="ptag">${t}</span>`).join('');
   document.getElementById('panel-equipo').innerHTML = (lugar.equipo || []).map(e => `<span class="equipo-tag">${e}</span>`).join('');
   construirGaleria(lugar.imgs || (lugar.img ? [lugar.img] : []));
-  construirFiltroEquipo(lugar);
-  actualizarResaltado();
-  switchTab('info');
   document.getElementById('side-panel').classList.add('open');
   map.flyTo(lugar.latlng, Math.max(map.getZoom(), 11), { duration: 0.8 });
 }
