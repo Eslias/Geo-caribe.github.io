@@ -4,12 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Geo Caribe — Iniciar Sesión</title>
+
+  <!-- Tipografías: Playfair para títulos, DM Sans para texto general -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- SDK de Supabase para autenticación -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* Paleta de colores del proyecto */
     :root {
       --verde: #1a4a2e;
       --verde-med: #2d6a44;
@@ -20,6 +26,7 @@
       --muted: #6b6b6b;
     }
 
+    /* Fondo verde oscuro, tarjeta centrada */
     body {
       min-height: 100vh;
       font-family: 'DM Sans', sans-serif;
@@ -30,6 +37,7 @@
       padding: 20px;
     }
 
+    /* Contenedor principal del formulario */
     .card {
       background: var(--crema);
       border-radius: 18px;
@@ -39,6 +47,7 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
 
+    /* Encabezado con logo e ícono */
     .logo-wrap {
       display: flex;
       align-items: center;
@@ -54,6 +63,7 @@
       line-height: 1.1;
     }
 
+    /* Subtítulo pequeño bajo el nombre */
     .logo-title span {
       display: block;
       font-family: 'DM Sans', sans-serif;
@@ -77,6 +87,7 @@
       margin-bottom: 28px;
     }
 
+    /* Etiquetas de campo en mayúsculas */
     label {
       display: block;
       font-size: 12px;
@@ -101,8 +112,10 @@
       transition: border-color 0.2s;
     }
 
+    /* Resalta el borde al enfocar el campo */
     input:focus { border-color: var(--verde-claro); }
 
+    /* Botón principal de login */
     #btn-login {
       width: 100%;
       padding: 14px;
@@ -128,6 +141,7 @@
       margin-bottom: 16px;
     }
 
+    /* Botón secundario para ir al registro */
     #btn-registro {
       width: 100%;
       padding: 13px;
@@ -144,6 +158,7 @@
 
     #btn-registro:hover { background: var(--crema-oscura); }
 
+    /* Área de mensajes de error o éxito */
     #mensaje {
       margin-top: 16px;
       padding: 12px 14px;
@@ -159,6 +174,7 @@
 <body>
 
 <div class="card">
+  <!-- Logo con ícono SVG de hoja/planta -->
   <div class="logo-wrap">
     <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M8 28 C5 22, 3 14, 10 8 C12 6, 14 7, 13 10 C12 14, 9 18, 10 24 Z" fill="#4a9463" opacity="0.85"/>
@@ -185,22 +201,26 @@
 
   <div class="divider">¿No tenés cuenta?</div>
 
+  <!-- Redirige a la pantalla de registro -->
   <button id="btn-registro" onclick="window.location.href='registro.html'">Crear cuenta nueva</button>
 
   <div id="mensaje"></div>
 </div>
 
 <script>
+  // Credenciales del proyecto en Supabase
   const SUPABASE_URL = 'https://ipotudrokwjhmhdxtrko.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_R5Eo0TozjpknIwfjQXz_xw_Mbktj4Ok';
 
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // Si ya hay sesión activa, va directo al mapa
   sb.auth.getSession().then(({ data }) => {
     if (data.session) window.location.href = 'index.html';
   });
 
+  // Muestra un mensaje de error o éxito bajo el formulario
   function mostrarMensaje(texto, tipo) {
     const el = document.getElementById('mensaje');
     el.textContent = texto;
@@ -208,6 +228,7 @@
     el.style.display = 'block';
   }
 
+  // Valida campos y llama a Supabase para autenticar al usuario
   async function iniciarSesion() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -218,6 +239,7 @@
       return;
     }
 
+    // Deshabilita el botón mientras procesa
     btn.disabled = true;
     btn.textContent = 'Entrando...';
 
@@ -228,11 +250,13 @@
       btn.disabled = false;
       btn.textContent = 'Iniciar sesión';
     } else {
+      // Login exitoso: redirige al mapa tras un breve delay
       mostrarMensaje('¡Sesión iniciada! Redirigiendo...', 'exito');
       setTimeout(() => window.location.href = 'index.html', 1000);
     }
   }
 
+  // Permite enviar el formulario con Enter
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') iniciarSesion();
   });
